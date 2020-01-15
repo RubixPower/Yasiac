@@ -1,4 +1,3 @@
-import gi
 #!/usr/bin/env python3
 import subprocess
 import os
@@ -10,27 +9,45 @@ from gi.repository import Gtk, Gdk, GObject
 import cpu, gpu, ram
 import control
 
-class Handler():
-    def __init__(self):
-        self.window = window
+cdef class Handler():
+    cdef dict __dict__
+    cpdef __init__(self):
+        self.window = Window()
         self.gpu = gpu.Gpu()
         self.Control = control.Control()
-     def on_destroy(self, *args):
+    cpdef on_destroy(self, *args):
         Gtk.main_quit()
         quit()
     ############################################
     # Load Stack
-    def load_info(self, *args):
-        pass
+    cpdef load_info(self, *args):
+        cpdef cpu():
+            pass
+        cpdef gpu():
+            pass
+        cpdef ram():
+            pass
     
     ############################################
     # Control Stack
-    def control_apply(self, *args):
-        pass
-    def GpuFanScaleMode(self):
+    cpdef control_apply(self, *args):
+        status = control_toggle_button_mode()
+        if status == True:
+            Control.amd_fan_speed_mode_change('auto')
+        else:
+            adjustment_value = window.adjustment_value()
+            Control.amd_fan_speed_mode_change('manual')
+            Control.amd_fan_speed_change(float(adjustment_value) * 2.55)
+        
+    cpdef GpuFanScaleMode(self, *args):
+        status = control_toggle_button_mode()
+        if status == False:
+            window.ScaleSetSensitive(True)
+        else:
+            window.ScaleSetSensitive(False)
 
-
-class Window:
+cdef class Window:
+    cdef dict __dict__
     def __init__(self):
         self.path = ("{}/".format(os.path.dirname(os.path.abspath(__file__)))) # current directory path
         self.builder = Gtk.Builder()
@@ -62,12 +79,20 @@ class Window:
 
         # functions that need to be executed for the app
         self.GpuFanMode()
-    
-    def ScaleSetSensitive(self, mode):
+    # Only gets the information
+    cpdef control_toggle_button_mode(self):
+        return self.GpuCheckBtn.get_active()
+
+    cpdef adjustment_value(self):
+        return self.GpuAdjustment.get_value()
+
+    # Edits/does something
+    cdef ScaleSetSensitive(self, mode):
         # True or False
         self.GpuScale.set_sensitive(mode)
 
-    def GpuFanMode(self):
+
+    cdef GpuFanMode(self):
         vendor = gpu.vendor()
         if vendor == 'amd':
             fan_status = self.Control.amd_fan_speed_status
@@ -82,9 +107,14 @@ class Window:
             elif fan_status == 'auto':
                 self.GpuCheckBtn.set_active(True)
                 self.ScaleSetSensitive(False)
-    def label_cpu_static(self):
-        self.label_set = {'cpu_name_label':self.cpu_info.name, 'cpu_cores_threads_label':self.cpu_info.cores_threads,
+    cdef label_cpu_static(self):
+        label_set = {'cpu_name_label':self.cpu_info.name, 'cpu_cores_threads_label':self.cpu_info.cores_threads}
+        for element in self.label_set:
+            label = self.builder.get_object(element)
+            value = self.label_set.get(element)()
+            label.set_text(f'\t{value}')
 
-    def main(self):
+
+    cdef main(self):
         self.window.show_all()
         Gtk.main()

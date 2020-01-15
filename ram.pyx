@@ -1,6 +1,5 @@
 import subprocess 
 cdef class Ram():
-
     cpdef str ram_capacity(self):
         cdef str ram_size
         cdef str ram_capacity

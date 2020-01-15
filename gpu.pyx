@@ -1,18 +1,20 @@
 import subprocess
 cdef class Gpu():
-
+    cdef dict __dict__
     def __init__(self):
         self.sensors = subprocess.getoutput(f"sensors -A").splitlines()
     cpdef str name(self):
+        cdef list temporary
         cdef str name
-        name =  subprocess.getoutput("glxinfo -B | grep 'Device: '")
-        clear_list = ['(TM)', 'Graphics']
+        cdef list clear_list
+        temporary =  subprocess.getoutput("glxinfo -B | grep 'Device: '").split('    Device:')
+        name = temporary.replace(' (TM)', '')
+        clear_list = [' (TM)', 'Graphics']
 
     cpdef str vram(self):
         cdef list data
         cdef list vram
-        cdef list clear_list
-        clear_list = []
+        
         data = (subprocess.getoutput("rocm-smi --showmemuse")).splitlines().split('Device: ')
         for line in data:
             if 'GPU memory use' in line:

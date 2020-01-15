@@ -21,17 +21,17 @@ class Control():
             return 'error'
 
     def amd_fan_speed_mode_change(self, choice):
-        def amd_fan_speed_mode_change(number):
+        def file_write(number):
             with open(f'{self.fan_speed_file_status}', 'w') as f:
                 f.write(number)
         if choice == 'max':
-            amd_fan_speed_mode_change('0')
+            file_write('0')
         elif  choice == 'manual':
-            amd_fan_speed_mode_change('1')
+            file_write('1')
         elif choice == 'auto':
-            amd_fan_speed_mode_change('2')
+            file_write('2')
         elif choice == 'error':
-            amd_fan_speed_mode_change('2')
+            file_write('2')
 
     def amd_fan_speed_change(self, number):
         with open(f'{self.fan_speed_file}', 'w') as f:
