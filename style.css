@@ -1,0 +1,38 @@
+.HeaderMarginRight {
+    margin-right: 10px;
+}
+.HeaderMarginLeft {
+    margin-right: 10px;
+}
+.HeaderStackSwitcher {
+    font-size: 101%;
+}
+.StackSwitcher {
+    font-size: 110%;
+}
+.StaticInfoLabel {
+    font-size: 150%;
+    font-weight: bolder;
+}
+.DynamicInfoLabel {
+    font-size: 150%;
+    font-weight: bolder;
+}
+.InfoHorizontal {
+    margin-bottom: 10px;
+}
+.BoxBottom {
+    padding-bottom: 10px;
+}
+
+
+.StaticControlLabel {
+    font-size: 150%;
+}
+
+.ControlScale{
+    font-size: 110%;
+}
+.Separator {
+    opacity: 0;
+}
