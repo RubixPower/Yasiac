@@ -6,45 +6,47 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, GObject
 
-import cpu, gpu, ram
+from compiled import cpu, gpu, ram
 import control
 
 cdef class Handler():
     cdef dict __dict__
-    cpdef __init__(self):
+    def __init__(self):
         self.window = Window()
         self.gpu = gpu.Gpu()
         self.Control = control.Control()
-    cpdef on_destroy(self, *args):
+
+    def on_destroy(self, *args):
         Gtk.main_quit()
         quit()
     ############################################
     # Load Stack
-    cpdef load_info(self, *args):
-        cpdef cpu():
+    def load_info(self, *args):
+        def cpu():
             pass
-        cpdef gpu():
+        def gpu():
             pass
-        cpdef ram():
+        def ram():
             pass
     
     ############################################
     # Control Stack
-    cpdef control_apply(self, *args):
-        status = control_toggle_button_mode()
+    def control_apply(self, *args):
+        status = self.window.control_toggle_button_mode()
+        cpdef int adjustment_value
         if status == True:
-            Control.amd_fan_speed_mode_change('auto')
+            self.Control.amd_fan_speed_mode_change('auto')
         else:
-            adjustment_value = window.adjustment_value()
-            Control.amd_fan_speed_mode_change('manual')
-            Control.amd_fan_speed_change(float(adjustment_value) * 2.55)
+            adjustment_value = self.window.adjustment_value()
+            self.Control.amd_fan_speed_mode_change('manual')
+            self.Control.amd_fan_speed_change(float(adjustment_value) * 2.55)
         
-    cpdef GpuFanScaleMode(self, *args):
-        status = control_toggle_button_mode()
+    def GpuFanScaleMode(self, *args):
+        status = self.window.control_toggle_button_mode()
         if status == False:
-            window.ScaleSetSensitive(True)
+            self.window.ScaleSetSensitive(True)
         else:
-            window.ScaleSetSensitive(False)
+            self.window.ScaleSetSensitive(False)
 
 cdef class Window:
     cdef dict __dict__
@@ -103,7 +105,7 @@ cdef class Window:
             elif fan_status == 'manual':
                 self.GpuCheckBtn.set_active(False)
                 self.ScaleSetSensitive(True)
-                self.GpuAdjustment.set_value(Control.amd_fan_speed_current())
+                self.GpuAdjustment.set_value(self.Control.amd_fan_speed_current())
             elif fan_status == 'auto':
                 self.GpuCheckBtn.set_active(True)
                 self.ScaleSetSensitive(False)

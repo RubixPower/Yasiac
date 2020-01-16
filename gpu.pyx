@@ -3,25 +3,25 @@ cdef class Gpu():
     cdef dict __dict__
     def __init__(self):
         self.sensors = subprocess.getoutput(f"sensors -A").splitlines()
+
     cpdef str name(self):
-        cdef list temporary
-        cdef str name
-        cdef list clear_list
-        temporary =  subprocess.getoutput("glxinfo -B | grep 'Device: '").split('    Device:')
-        name = temporary.replace(' (TM)', '')
-        clear_list = [' (TM)', 'Graphics']
+        cdef list data
+        cpdef str line
+        cpdef str name
+        data=  subprocess.getoutput("glxinfo -B | grep 'Device: '").splitlines()
+        for line in data:
+            if 'Device: ' in line:
+                name = line.split('Device: ')[1].replace('(TM) ', '').split(' (')[0]
+                return name
 
     cpdef str vram(self):
         cdef list data
-        cdef list vram
-        
-        data = (subprocess.getoutput("rocm-smi --showmemuse")).splitlines().split('Device: ')
+        cdef str vram
+        data = (subprocess.getoutput("rocm-smi --showmemuse")).splitlines()
         for line in data:
-            if 'GPU memory use' in line:
-                for element in clear_list:
-                    line.replace(element, '')
-                vram = line.split(' GPU memory use (%):').strip()[-1]
-            return vram
+            if 'GPU memory use (%):' in line:
+                vram = line.split('GPU memory use (%): ')[-1]
+        return vram
 
     cpdef str vendor(self):
         cdef str vendor
@@ -34,7 +34,7 @@ cdef class Gpu():
             'error'
 
     cpdef str clock(self):
-        return 'needs to be implimented'
+        return 'gpu clock needs to be implimented'
 
     cpdef str fan_current(self):
         for line in self.sensors:
@@ -51,10 +51,10 @@ cdef class Gpu():
     cpdef str load(self):
         cdef list data
         cdef str load
-        data = subprocess.getouput('rocm-smi -u').splitlines()
+        data = subprocess.getoutput('rocm-smi -u').splitlines()
         for line in data:
             if 'GPU use (%)' in line:
                 load_line = line
-                load = load_line.split('GPU use (%):')[-1]
+                load = load_line.split('GPU use (%):')[-1].strip()
                 return load
 

@@ -1,2 +1,5 @@
 
 *.glade~
+*.o
+*.so
+*.pyc
