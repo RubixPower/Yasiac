@@ -1,3 +1,4 @@
+# cython: language_level=3, boundscheck=False
 import subprocess
 cdef class Cpu:
     cdef dict __dict__
@@ -48,3 +49,5 @@ cdef class Cpu:
         cdef str clock
         clock = subprocess.getoutput(f"sudo lscpu | grep -F 'CPU MHz'").split(':')[1].strip().split('.')[0]
         return clock
+    cpdef str load(self):
+        return 'not implimented yet'

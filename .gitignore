@@ -3,3 +3,12 @@
 *.o
 *.so
 *.pyc
+setup.py
+compiled/ui.glade
+compiled/style.css
+setup.py
+setup.py
+test.py
+*.json
+setup.py
+setup.py

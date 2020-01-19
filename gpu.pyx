@@ -1,27 +1,47 @@
+# cython: language_level=3
 import subprocess
 cdef class Gpu():
     cdef dict __dict__
     def __init__(self):
-        self.sensors = subprocess.getoutput(f"sensors -A").splitlines()
-
+        self.sensors = subprocess.getoutput("sensors -A").splitlines()
+        self.glxinfo = subprocess.getoutput("glxinfo -B").splitlines()
+        self.rocm = subprocess.getoutput("rocm-smi -a").splitlines()
     cpdef str name(self):
         cdef list data
         cpdef str line
         cpdef str name
-        data=  subprocess.getoutput("glxinfo -B | grep 'Device: '").splitlines()
-        for line in data:
+        for line in self.glxinfo:
             if 'Device: ' in line:
                 name = line.split('Device: ')[1].replace('(TM) ', '').split(' (')[0]
                 return name
 
-    cpdef str vram(self):
+    cpdef int vram_total(self):
+        cdef int vram
+        cdef str line
+        for line in self.glxinfo:
+            if 'Video memory:' in line:
+                vram = int(line.split(': ')[1].replace('MB', '').strip())
+                return vram
+    cpdef int vram_usage_percentage(self):
         cdef list data
-        cdef str vram
+        cdef int vram_usage
         data = (subprocess.getoutput("rocm-smi --showmemuse")).splitlines()
         for line in data:
-            if 'GPU memory use (%):' in line:
-                vram = line.split('GPU memory use (%): ')[-1]
-        return vram
+            if 'GPU memory use (%)' in line:
+                vram_percentage = line.split('GPU memory use (%):')[-1].strip()
+                return int(vram_percentage)
+                
+
+    cpdef str vram_usage_total(self):
+        cdef int vram_total, vram_usage_percentage, vram_usage
+        cdef str vram_usage_total
+        vram_total = int(self.vram_total())
+        vram_usage_percentage = int(self.vram_usage_percentage())
+        one_percentage = vram_total / 100
+        usage = str(int(one_percentage * vram_usage_percentage))
+        vram_usage_total = (f'~{str(usage)}/{str(vram_total)}')
+        return vram_usage_total
+
 
     cpdef str vendor(self):
         cdef str vendor
@@ -31,24 +51,25 @@ cdef class Gpu():
         elif 'NVIDIA' in vendor:
             return 'nvidia'
         else:
-            'error'
+            return 'error'
 
     cpdef str clock(self):
         return 'gpu clock needs to be implimented'
 
-    cpdef str fan_current(self):
+    cpdef int fan_speed_current(self):
+        cdef str line
         for line in self.sensors:
-            if 'fan1:         ' in line:
-                fan = line.split('fan1:         ')[1].split(' RPM')[0]
-                return fan
+            if 'fan1:' in line:
+                FanSpeed = line.split('fan1:')[1].split('  (')[0].strip().replace('RPM', '')
+                return int(FanSpeed)
 
-    cpdef str temp(self):
+    cpdef int temperature(self):
         for line in self.sensors:
             if 'edge:         ' in line:
                 temp = line.replace('+', '').split('edge:         ')[1].split('°C  (')[0]
-                return temp
+                return int(float(temp))
 
-    cpdef str load(self):
+    cpdef int load(self):
         cdef list data
         cdef str load
         data = subprocess.getoutput('rocm-smi -u').splitlines()
@@ -56,5 +77,5 @@ cdef class Gpu():
             if 'GPU use (%)' in line:
                 load_line = line
                 load = load_line.split('GPU use (%):')[-1].strip()
-                return load
+                return int(load)
 

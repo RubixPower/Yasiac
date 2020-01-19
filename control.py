@@ -8,9 +8,8 @@ class Control():
         self.fan_speed_file = subprocess.getoutput('sudo find /sys -name pwm1')
         self.fan_speed_file_status = subprocess.getoutput('sudo find /sys -name pwm1_enable')
 
-    def amd_fan_speed_status(self):
+    def amd_fan_speed_mode_current(self):
         status = subprocess.getoutput(f'cat {self.fan_speed_file_status}')
-
         if status == '0':
             return 'max'
         elif status == '1':

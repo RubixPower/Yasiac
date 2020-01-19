@@ -1,6 +1,7 @@
+# cython: language_level=3, boundscheck=False   
 import subprocess 
 cdef class Ram():
-    cpdef str ram_capacity(self):
+    cpdef str capacity(self):
         ram_output = subprocess.getoutput(f"lsmem -o SIZE").splitlines()
         for line in ram_output:
             if 'Total online memory' in line:
@@ -9,7 +10,7 @@ cdef class Ram():
         
 
 
-    cpdef str ram_sticks_manufacturer(self):
+    cpdef str modules_manufacturer(self):
         cdef list data 
         cdef str line
         cdef str temporary
