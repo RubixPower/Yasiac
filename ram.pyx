@@ -14,15 +14,13 @@ cdef class Ram():
         cdef list data 
         cdef str line
         cdef str temporary
-        cdef list manufacturer_list
-        cdef list manufacturer
-        manufacturer_list = []
+        cdef set manufacturer
+        manufacturer = set()
         data = subprocess.getoutput(f"sudo dmidecode --type memory").splitlines()
         for line in data:
             if 'Manufacturer: ' in line:
                 temporary = line.split('Manufacturer: ')[1]
-                manufacturer_list.append(temporary)
-        manufacturer = list(set(manufacturer_list))
-        manufacturer.remove('Not Specified')
+                manufacturer.add(temporary)
+        manufacturer.discard('Not Specified')
         return (', '.join(manufacturer))
          

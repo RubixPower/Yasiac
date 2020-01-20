@@ -580,7 +580,7 @@
                                         <property name="can_focus">False</property>
                                         <property name="orientation">vertical</property>
                                         <child>
-                                          <object class="GtkLabel" id="cpu_clock_label1">
+                                          <object class="GtkLabel" id="cpu_temp_label">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="halign">end</property>
@@ -638,7 +638,7 @@
                                         <property name="can_focus">False</property>
                                         <property name="orientation">vertical</property>
                                         <child>
-                                          <object class="GtkLabel" id="cpu_clock_label2">
+                                          <object class="GtkLabel" id="cpu_load_label">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="halign">end</property>

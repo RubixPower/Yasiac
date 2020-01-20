@@ -154,12 +154,12 @@ class Window:
                 self.ControlGpuAdjustment.set_value(fan_speed / 2.55)
             else:
                 pass
-    def StaticInfo(self):
+    def DynamicInfo(self):
         def cpu():
             for key in self.cpu_dynamic_labels:
                 label = self.builder.get_object(key)
-                print(key)
                 value = self.cpu_dynamic_labels.get(key)()
+                # print(label, value)
                 label.set_text(f'\t{value}')
         def gpu():
             for key in self.gpu_dynamic_labels:
@@ -169,8 +169,9 @@ class Window:
         while self.threads_run:
             self.gpu_dynamic_info = self.gpu_info()
             self.cpu_dynamic_info = self.cpu_info()
-            self.gpu_dynamic_labels = {'gpu_vram_label':self.gpu_dynamic_info.vram_usage_total, 'gpu_clock_label':self.gpu_dynamic_info.clock, 'gpu_temp_label':self.gpu_dynamic_info.temperature, 'gpu_fspeed_label':self.gpu_dynamic_info.fan_speed_current, 'gpu_load_label':self.gpu_dynamic_info.load}
             self.cpu_dynamic_labels = {'cpu_clock_label':self.cpu_dynamic_info.clock, 'cpu_temp_label':self.cpu_dynamic_info.temperature, 'cpu_load_label':self.cpu_dynamic_info.load}
+            self.gpu_dynamic_labels = {'gpu_vram_label':self.gpu_dynamic_info.vram_usage_total, 'gpu_clock_label':self.gpu_dynamic_info.clock, 'gpu_temp_label':self.gpu_dynamic_info.temperature, 'gpu_fspeed_label':self.gpu_dynamic_info.fan_speed_current, 'gpu_load_label':self.gpu_dynamic_info.load}
+           
             cpu()
             gpu()
             time.sleep(1)
@@ -179,9 +180,9 @@ class Window:
         self.window.show()
         Gtk.main()
     def main(self):
-        self.FanUpdater_loop = threading.Thread(target=self.FanUpdater)
-        self.FanUpdater_loop.start()
-        self.StaticInfo_loop = threading.Thread(target=self.StaticInfo)
-        self.StaticInfo_loop.start()
+        # self.FanUpdater_loop = threading.Thread(target=self.FanUpdater)
+        # self.FanUpdater_loop.start()
+        self.DynamicInfo_loop = threading.Thread(target=self.DynamicInfo)
+        self.DynamicInfo_loop.start()
         self.MainWindow_poop = threading.Thread(target=self.show_window)
         self.MainWindow_poop.start()
