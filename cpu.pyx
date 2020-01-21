@@ -1,5 +1,5 @@
 # cython: language_level=3, boundscheck=False
-import subprocess
+import subprocess, psutil
 cdef class Cpu:
     cdef dict __dict__
     def __init__(self):
@@ -50,4 +50,6 @@ cdef class Cpu:
         clock = subprocess.getoutput(f"sudo lscpu | grep -F 'CPU MHz'").split(':')[1].strip().split('.')[0]
         return clock
     cpdef str load(self):
-        return 'not implimented yet'
+        load = '{:.2f}'.format(psutil.cpu_percent())
+        
+        return load

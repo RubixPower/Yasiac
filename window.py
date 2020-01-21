@@ -110,19 +110,19 @@ class Window:
         for element in self.cpu_labels:
             label = self.builder.get_object(element)
             value = self.cpu_labels.get(element)()
-            label.set_text(f'\t{value}')
+            label.set_text(f'\t{str(value)}')
 
     def static_gpu_labels(self):
         for element in self.gpu_labels:
             label = self.builder.get_object(element)
             value = self.gpu_labels.get(element)()
-            label.set_text(f'\t{value}')
+            label.set_text(f'\t{str(value)}')
 
     def static_ram_labels(self):
         for element in self.ram_labels:
             label = self.builder.get_object(element)
             value = self.ram_labels.get(element)()
-            label.set_text(f'\t{value}')
+            label.set_text(f'\t{str(value)}')
 
 ### Control ###############################################################################################################################
     def GpuCheckBtnStatus(self):
@@ -160,12 +160,12 @@ class Window:
                 label = self.builder.get_object(key)
                 value = self.cpu_dynamic_labels.get(key)()
                 # print(label, value)
-                label.set_text(f'\t{value}')
+                label.set_text(f'\t{str(value)}')
         def gpu():
             for key in self.gpu_dynamic_labels:
                 label = self.builder.get_object(key)
                 value = self.gpu_dynamic_labels.get(key)()
-                label.set_text(f'\t{value}')
+                label.set_text(f'\t{str(value)}')
         while self.threads_run:
             self.gpu_dynamic_info = self.gpu_info()
             self.cpu_dynamic_info = self.cpu_info()
