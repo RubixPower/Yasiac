@@ -10,8 +10,8 @@ cdef class Cpu:
         cdef str name
         for line in self.cpuinfo:
             if 'model name' in line:
-                name = line.split(':')[1].split('@')[0].replace('(R)', '').replace('(TM)', '').strip()
-        return name
+                name = line.split(':')[1].split(' CPU @')[0].replace('(R)', '').replace('(TM)', '').strip()
+                return name
 
     cpdef str cores_threads(self):
         cdef str cores
