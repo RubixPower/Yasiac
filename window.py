@@ -159,7 +159,6 @@ class Window:
             for key in self.cpu_dynamic_labels:
                 label = self.builder.get_object(key)
                 value = self.cpu_dynamic_labels.get(key)()
-                # print(label, value)
                 label.set_text(f'\t{str(value)}')
         def gpu():
             for key in self.gpu_dynamic_labels:
