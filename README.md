@@ -8,10 +8,12 @@ A simple app that lets you get some system info and control gpu fan/s
                                                                                                                                                           
 **How to run this app ?**                                                                                                       
 >At the current state of the app you can execute/run it with just doing ```sudo python app.py```.
+
 **Dependencies**
 >Python3                                                                                                                                                                                                                                                                                                                                                                                                                        
 >glxinfo                                                                                                                                                                                                                                                                                                                                                                                                                        
 >sensors 
+
 ##  Build instructions
 **root folder = Yasiac**
 1. Make a folder named `compiled`in the apps root folder. 
