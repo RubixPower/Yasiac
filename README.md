@@ -3,16 +3,18 @@ Yet Another System Info And Control app
 A simple app that lets you get some system info and control gpu fan/s                                                                                                                                                                                                                                                                                                       
 
 ## Getting Started
-Q: How to get a copy of this project ?                                                                                       
-A: ```git clone  https://github.com/RubixPower/Yasiac.git```                                                                                       
-Q: How to run this app ?                                                                                                        
-A: At the current state of the app you can execute/run it with just doing ```sudo python app.py``` but later i will change things a little of                                                                                                                                                                                                            
-##  Build instructions                                                                                                                                                                                                                                                                                                             
-Q: What do I need ?                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-Python3                                                                                                                                                                                                                                                                                                                                                                                                                        
-glxinfo                                                                                                                                                                                                                                                                                                                                                                                                                        
-sensors                                                                                                                                                                                                                                                                                                                  
-Cython (only to compile .pyx files)                                                                                                                                                                                                                                                                                                                  
+**How to get a copy of this project ?**                                                                                       
+>By executing ```git clone  https://github.com/RubixPower/Yasiac.git``` in the terminal.                                                                                       
+**How to run this app ?**                                                                                                       
+>At the current state of the app you can execute/run it with just doing ```sudo python app.py```.
+**Dependencies**
+>Python3                                                                                                                                                                                                                                                                                                                                                                                                                        
+>glxinfo                                                                                                                                                                                                                                                                                                                                                                                                                        
+>sensors 
+##  Build instructions
+**root folder = Yasiac**
+1. Make a folder named `compiled`in the apps root folder. 
+2. Execute ``python3 setup.py  build_ext --inplace && mv ./*.so ./compiled/ && rm *.c`` in the apps root folder. 
 
-Sorry for the current readme state... It will be changed in the future as the project gets updated daily 
-A huge thanks to openglfreak for the help and info about python programming 
+
+*A huge thanks to openglfreak for the help and info about python programming*
