@@ -13,8 +13,8 @@ A simple app that lets you get some system info and control gpu fan/s
 **Dependencies**
 >Python3                                                                                                                                                                                                                                                                                                                                                                                                                        
 >Glxinfo                                                                                                                                                                                                                                                                                                                                                                                                                        
->lm-sensors
->Cython (build only)
+>lm-sensors                                                                                                                         
+>Cython (build only)                                                                                                                
 
 ##  Build instructions
 1. Make a folder named `compiled`in the apps root folder. 
