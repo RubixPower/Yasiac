@@ -1,4 +1,4 @@
-# cython: language_level=3, boundscheck=False   
+# cython: language_level=3
 import subprocess 
 cdef class Ram():
     cpdef str capacity(self):
@@ -6,7 +6,7 @@ cdef class Ram():
         for line in ram_output:
             if 'Total online memory' in line:
                 ram_capacity = line.replace('Total online memory:', '').strip().replace('G', '')
-                return ram_capacity
+                return (f'{ram_capacity} GB')
         
 
 
@@ -16,7 +16,7 @@ cdef class Ram():
         cdef str temporary
         cdef set manufacturer
         manufacturer = set()
-        data = subprocess.getoutput(f"sudo dmidecode --type memory").splitlines()
+        data = subprocess.getoutput(f"dmidecode --type memory").splitlines()
         for line in data:
             if 'Manufacturer: ' in line:
                 temporary = line.split('Manufacturer: ')[1]

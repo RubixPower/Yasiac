@@ -1,3 +1,4 @@
+/*Info*/
 .HeaderMarginRight {
     margin-right: 10px;
 }
@@ -10,13 +11,17 @@
 .StackSwitcher {
     font-size: 110%;
 }
+.StaticInfoHeaderLabel {
+    font-size: 170%;
+    font-weight: bolder;
+}
 .StaticInfoLabel {
     font-size: 150%;
-    font-weight: bolder;
+    font-weight: bold;
 }
 .DynamicInfoLabel {
     font-size: 150%;
-    font-weight: bolder;
+    font-weight: bold;
 }
 .InfoHorizontal {
     margin-bottom: 10px;
@@ -24,15 +29,27 @@
 .BoxBottom {
     padding-bottom: 10px;
 }
+/* .InfoProgressBar {
+    min-height: none;
+} */
+.InfoProgressBar{
+    -GtkProgressBar-min-horizontal-bar-height: 25px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
 
-
+/*Control*/
 .StaticControlLabel {
     font-size: 150%;
 }
-
 .ControlScale{
     font-size: 110%;
 }
 .Separator {
     opacity: 0;
 }
+
+
+
+
+

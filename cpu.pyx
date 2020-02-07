@@ -1,4 +1,4 @@
-# cython: language_level=3, boundscheck=False
+# cython: language_level=3
 import subprocess, psutil
 cdef class Cpu:
     cdef dict __dict__
@@ -6,14 +6,14 @@ cdef class Cpu:
         with open('/proc/cpuinfo', 'r') as f:
             self.cpuinfo = f.read().splitlines()
 
-    cpdef str name(self):
-        cdef str name
-        for line in self.cpuinfo:
-            if 'model name' in line:
-                name = line.split(':')[1].split(' CPU @')[0].replace('(R)', '').replace('(TM)', '').strip()
-                return name
+    def name(self):
+        def clean(text):
+            cleaned = text.split(':')[1].split(' CPU @')[0].replace('(R)', '').replace('(TM)', '').strip()
+            return cleaned
+        name = [clean(line) for line in self.cpuinfo if 'model name' in line]
+        return name[0]
 
-    cpdef str cores_threads(self):
+    cpdef str cores_threads(self): 
         cdef str cores
         cdef int thread_loop
         cdef str threads
@@ -35,21 +35,27 @@ cdef class Cpu:
         cdef list data
         cdef int cpu_cores
         cdef str line
-        cdef list clean
-        cdef int temps
-        temps = 0
-        data = subprocess.getoutput("sudo sensors -A | grep -F 'Core'").splitlines()
-        cpu_cores = len(data) # gets how many cures you have
+        cdef str float_str
+        cdef int temp_int
+        cdef int sum_temps
+        sum_temps = 0
+        data = subprocess.getoutput("sensors -A").splitlines()
+        cpu_cores = 0 # gets how many cores you have
         for line in data:
-            clean = line.split(':        +')[1].replace('°C', '').split('  (')
-            temps = int(float(clean[0])) + temps
-        return str(round(temps / 6))
+            if 'Core' in line:
+                float_str = line.split(':        +')[-1].split('°C  (')[0]
+                temp_int = (int(float(float_str)))
+                sum_temps = sum_temps + temp_int
+                cpu_cores = cpu_cores + 1
+        
+        return (f'{str(round(sum_temps / cpu_cores))} [°C]')
 
     cpdef str clock(self):
         cdef str clock
-        clock = subprocess.getoutput(f"sudo lscpu | grep -F 'CPU MHz'").split(':')[1].strip().split('.')[0]
-        return clock
+        clock = subprocess.getoutput(f"lscpu | grep -F 'CPU MHz'").split(':')[1].strip().split('.')[0]
+        return (f'{clock} [MHz]')
     cpdef str load(self):
-        load = '{:.2f}'.format(psutil.cpu_percent())
+        cdef str load
+        load = '{:.0f}'.format(psutil.cpu_percent())
         
-        return load
+        return (f'{load} [%]')

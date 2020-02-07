@@ -94,8 +94,6 @@ class Window:
         self.static_ram_labels()
 
         
-        #dynamic info
-
 
         # Control Stack
 
@@ -103,7 +101,7 @@ class Window:
         self.ControlGpuScale = self.builder.get_object('GpuFanScale')
         self.ControlGpuAdjustment = self.builder.get_object('GpuFanAdjustment')
         self.threads_run = True
-        # self.ControlInit()
+        self.ControlInit()
 ### Labels ################################################################################################################################
         
     def static_cpu_labels(self):
@@ -137,13 +135,18 @@ class Window:
         return status
 
     def ControlInit(self):
-        mode = self.control.amd_fan_speed_mode_current()
-        if mode == 'auto':
-            self.ControlGpuCheckButton.set_active(True)
-            self.ControlGpuScale.set_sensitive(False)
+        if self.gpu_info.vendor == 'amd':
+            mode = self.control.amd_fan_speed_mode_current()
+            if mode == 'auto':
+                self.ControlGpuCheckButton.set_active(True)
+                self.ControlGpuScale.set_sensitive(False)
+            else:
+                self.ControlGpuCheckButton.set_active(False)
+                self.ControlGpuScale.set_sensitive(True)
+        elif self.gpu_info.vendor == 'nvidia':
+            print('fan control not supported on nvidia gpus yet')
         else:
-            self.ControlGpuCheckButton.set_active(False)
-            self.ControlGpuScale.set_sensitive(True)
+            print('If you have nvidia/amd dedicated gpu report this !!!')
 
     def FanUpdater(self):
     #updates the fan adjustment value every 1 sec WHEN check button is not active
@@ -170,13 +173,12 @@ class Window:
             self.cpu_dynamic_info = self.cpu_info()
             self.cpu_dynamic_labels = {'cpu_clock_label':self.cpu_dynamic_info.clock, 'cpu_temp_label':self.cpu_dynamic_info.temperature, 'cpu_load_label':self.cpu_dynamic_info.load}
             self.gpu_dynamic_labels = {'gpu_vram_label':self.gpu_dynamic_info.vram_usage_total, 'gpu_clock_label':self.gpu_dynamic_info.clock, 'gpu_temp_label':self.gpu_dynamic_info.temperature, 'gpu_fspeed_label':self.gpu_dynamic_info.fan_speed_current, 'gpu_load_label':self.gpu_dynamic_info.load}
-           
             cpu()
             gpu()
             time.sleep(1)
 
     def show_window(self):
-        self.window.show()
+        self.window.show_all()
         Gtk.main()
     def main(self):
         self.FanUpdater_loop = threading.Thread(target=self.FanUpdater)

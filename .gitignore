@@ -1,6 +1,7 @@
 
 *.glade~
 *.o
+*.so
 *.pyc
 test.py
 *.json

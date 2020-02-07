@@ -5,7 +5,7 @@ cdef class Gpu():
     def __init__(self):
         self.sensors = subprocess.getoutput("sensors -A").splitlines()
         self.glxinfo = subprocess.getoutput("glxinfo -B").splitlines()
-        self.rocm = subprocess.getoutput("rocm-smi -a").splitlines()
+        self.amdgpu_info = subprocess.getoutput("cat /sys/kernel/debug/dri/0/amdgpu_pm_info").splitlines()
     cpdef str name(self):
         cdef list data
         cpdef str line
@@ -39,7 +39,7 @@ cdef class Gpu():
         vram_usage_percentage = int(self.vram_usage_percentage())
         one_percentage = vram_total / 100
         usage = str(int(one_percentage * vram_usage_percentage))
-        vram_usage_total = (f'~{str(usage)}/{str(vram_total)}')
+        vram_usage_total = (f'~{usage}/{str(vram_total)}')
         return vram_usage_total
 
 
@@ -54,7 +54,10 @@ cdef class Gpu():
             return 'error'
 
     cpdef str clock(self):
-        return 'gpu clock needs to be implimented'
+        for line in self.amdgpu_info:
+            if '(SCLK)' in line:
+                clock = line.split(' MHz (SCLK)')[0].strip()
+        return clock
 
     cpdef int fan_speed_current(self):
         cdef str line
@@ -62,20 +65,16 @@ cdef class Gpu():
             if 'fan1:' in line:
                 FanSpeed = line.split('fan1:')[1].split('  (')[0].strip().replace('RPM', '')
                 return int(FanSpeed)
+    cpdef str temperature(self):
+        for line in self.amdgpu_info:
+            if 'GPU Temperature:' in line:
+                temp = line.split('GPU Temperature: ')[1].replace(' C', ' °C')
+        return temp
 
-    cpdef int temperature(self):
-        for line in self.sensors:
-            if 'edge:         ' in line:
-                temp = line.replace('+', '').split('edge:         ')[1].split('°C  (')[0]
-                return int(float(temp))
-
-    cpdef int load(self):
-        cdef list data
+    cpdef str load(self):
         cdef str load
-        data = subprocess.getoutput('rocm-smi -u').splitlines()
-        for line in data:
-            if 'GPU use (%)' in line:
-                load_line = line
-                load = load_line.split('GPU use (%):')[-1].strip()
-                return int(load)
+        for line in self.amdgpu_info:
+            if 'GPU Load:' in line:
+                load = line.split(': ')[1]
+                return load
 
