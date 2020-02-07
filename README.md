@@ -1,18 +1,22 @@
 # Yasiac
-Yet Another System Info And Control app
-A simple app that lets you get some system info and control gpu fan/s                                                             
-A huge thanks to openglfreak for the help and info about python programming                                                             
+Yet Another System Info And Control app                                                                                         
+A simple app that lets you get some system info and control gpu fan/s 
 
 ## Getting Started
-Q: How to get a copy of this project ?
-A: ```git clone  https://github.com/RubixPower/Yasiac.git```
-Q: How to run this app ?
-A: ``At the current state of the app you can execute/run it with just doing ```sudo python app.py``` but later i will change things a little of
-### Prerequisites
-Q: What do I need ?
-Python3
-glxinfo
-sensors
-Cython (only to compile .pyx files)
+**root folder = Yasiac**                                                                                                              
+**How to get a copy of this project ?**                                                                                       
+>By executing ```git clone  https://github.com/RubixPower/Yasiac.git``` in the terminal.
 
-Sorry for the current readme state... It will be changed in the future as the project gets updated daily
+**How to run this app ?**                                                                                                       
+>At the current state of the app you can run it by executing ```sudo python app.py``` in apps root folder
+
+**Dependencies**
+>Python3
+>Glxinfo
+>lm-sensors
+>rocm-smi
+>dmidecode
+>Cython (build only
+##  Build instructions
+1. Make a folder named `compiled`in the apps root folder. 
+2. Execute ``python3 setup.py  build_ext --inplace && mv ./*.so ./compiled/ && rm *.c`` in the apps root folder.
