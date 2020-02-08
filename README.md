@@ -14,7 +14,7 @@ A simple app that lets you get some system info and control gpu fan/s
 >Python3                                                                                                                                        
 >Glxinfo                                                                                                                                        
 >lm-sensors                                                                                                                                        
->Cython (build only)                                                                                                                                        
+>Cython                                                                                                                                       
 >rocm-smi                                                                                                                                        
 >dmidecode                                                                                                                                        
 ##  Build instructions                                                                                                                                        
