@@ -6,4 +6,5 @@
 test.py
 *.json
 setup.py
-test.py
+*.glade#
+test_all.py

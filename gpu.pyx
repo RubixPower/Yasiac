@@ -22,6 +22,7 @@ cdef class Gpu():
             if 'Video memory:' in line:
                 vram = int(line.split(': ')[1].replace('MB', '').strip())
                 return vram
+                
     cpdef int vram_usage_percentage(self):
         cdef list data
         cdef int vram_usage
@@ -41,16 +42,6 @@ cdef class Gpu():
         usage = str(int(one_percentage * vram_usage_percentage))
         vram_usage_total = (f'~{usage}/{str(vram_total)}')
         return vram_usage_total
-
-
-    cpdef str vendor(self):
-        vendor = subprocess.getoutput(f"lspci | grep VGA")
-        if 'AMD/ATI' in vendor:
-            return 'amd'
-        elif 'NVIDIA' in vendor:
-            return 'nvidia'
-        else:
-            return 'error'
 
     cpdef str clock(self):
         for line in self.amdgpu_info:
@@ -76,4 +67,3 @@ cdef class Gpu():
             if 'GPU Load:' in line:
                 load = line.split(': ')[1]
                 return load
-

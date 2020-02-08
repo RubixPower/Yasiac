@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
-import subprocess
+import control as cntrl
 import os
 import threading
-
+import time
 import gi
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk, GObject
-
-import control as cntrl
-import time
-
+from gi.repository import Gtk, Gdk
 class Handler():
     def __init__(self, window, control):
         self.window = window
@@ -18,30 +14,19 @@ class Handler():
         self.window.thread_run = False
         Gtk.main_quit()
         quit()
-
-    ############################################
-    # Load Stack
-    def load_info(self, *args):
-        pass
-        # def cpu():
-        #     pass
-        # def gpu():
-        #     pass
-        # def ram():
-        #     pass
-    
+        
     ############################################
     # Control Stack
     def GpuFanScaleMode(self, *args):
         status = self.window.GpuCheckBtnStatus()
-        if status == True:
+        if status:
             self.window.ControlGpuScale.set_sensitive(False)
         else:
             self.window.ControlGpuScale.set_sensitive(True)
 
     def ControlApply(self, *args):
         CheckBtn_status = self.window.ControlGpuCheckButton.get_active()
-        if CheckBtn_status == True:
+        if CheckBtn_status:
             self.control.amd_fan_speed_mode_change('auto')
         else:
             AdjustmentValue = self.window.ControlGpuAdjustment.get_value()
@@ -59,11 +44,11 @@ class Handler():
 
 class Window:
     def __init__(self, cpu_class, gpu_class, ram_class):
-        self.path = (f"{os.path.dirname(os.path.abspath(__file__))}/") # current directory path
+        self.path = (f"{os.path.dirname(os.path.abspath(__file__))}/")  # current directory path
         self.builder = Gtk.Builder()
-        self.builder.add_from_file(f'{self.path}ui.glade') # imports the .glade file
-        self.control = cntrl.Control() # makes an instance of the control.Control() class in the control(named cntrl so you can know its a file) module
-        self.builder.connect_signals(Handler(self, self.control)) # connect the event signals to MainHandler class
+        self.builder.add_from_file(f'{self.path}ui.glade')  # imports the .glade file
+        self.control = cntrl.Control()  # makes an instance of the control.Control() class in the control(named cntrl so you can know its a file) module
+        self.builder.connect_signals(Handler(self, self.control))  # connect the event signals to MainHandler class
         self.window = self.builder.get_object('application_window')
         # Imports the css
         style_provider = Gtk.CssProvider()
@@ -86,9 +71,9 @@ class Window:
         self.gpu_static_info = gpu_class()
         self.ram_static_info = ram_class()
         self.ram_static_info = ram_class()
-        self.cpu_labels = {'cpu_name_label':self.cpu_static_info.name, 'cpu_cores_threads_label':self.cpu_static_info.cores_threads}
-        self.gpu_labels = {'gpu_name_label':self.gpu_static_info.name}
-        self.ram_labels = {'ram_capacity_label': self.ram_static_info.capacity, 'ram_manufacturer_label':self.ram_static_info.modules_manufacturer}
+        self.cpu_labels = {'cpu_name_label': self.cpu_static_info.name, 'cpu_cores_threads_label': self.cpu_static_info.cores_threads}
+        self.gpu_labels = {'gpu_name_label': self.gpu_static_info.name}
+        self.ram_labels = {'ram_capacity_label': self.ram_static_info.capacity, 'ram_manufacturer_label': self.ram_static_info.modules_manufacturer}
         self.static_cpu_labels()
         self.static_gpu_labels()
         self.static_ram_labels()
@@ -102,7 +87,7 @@ class Window:
         self.ControlGpuAdjustment = self.builder.get_object('GpuFanAdjustment')
         self.threads_run = True
         self.ControlInit()
-### Labels ################################################################################################################################
+## Labels
         
     def static_cpu_labels(self):
         for element in self.cpu_labels:
@@ -135,18 +120,13 @@ class Window:
         return status
 
     def ControlInit(self):
-        if self.gpu_static_info.vendor() == 'amd':
-            mode = self.control.amd_fan_speed_mode_current()
-            if mode == 'auto':
-                self.ControlGpuCheckButton.set_active(True)
-                self.ControlGpuScale.set_sensitive(False)
-            else:
-                self.ControlGpuCheckButton.set_active(False)
-                self.ControlGpuScale.set_sensitive(True)
-        elif self.gpu_static_info.vendor() == 'nvidia':
-            print('fan control not supported on nvidia gpus yet')
+        mode = self.control.amd_fan_speed_mode_current()
+        if mode == 'auto':
+            self.ControlGpuCheckButton.set_active(True)
+            self.ControlGpuScale.set_sensitive(False)
         else:
-            print('If you have nvidia/amd dedicated gpu report this !!!')
+            self.ControlGpuCheckButton.set_active(False)
+            self.ControlGpuScale.set_sensitive(True)
 
     def FanUpdater(self):
     #updates the fan adjustment value every 1 sec WHEN check button is not active
@@ -171,8 +151,8 @@ class Window:
         while self.threads_run:
             self.gpu_dynamic_info = self.gpu_info()
             self.cpu_dynamic_info = self.cpu_info()
-            self.cpu_dynamic_labels = {'cpu_clock_label':self.cpu_dynamic_info.clock, 'cpu_temp_label':self.cpu_dynamic_info.temperature, 'cpu_load_label':self.cpu_dynamic_info.load}
-            self.gpu_dynamic_labels = {'gpu_vram_label':self.gpu_dynamic_info.vram_usage_total, 'gpu_clock_label':self.gpu_dynamic_info.clock, 'gpu_temp_label':self.gpu_dynamic_info.temperature, 'gpu_fspeed_label':self.gpu_dynamic_info.fan_speed_current, 'gpu_load_label':self.gpu_dynamic_info.load}
+            self.cpu_dynamic_labels = {'cpu_clock_label': self.cpu_dynamic_info.clock, 'cpu_temp_label': self.cpu_dynamic_info.temperature, 'cpu_load_label': self.cpu_dynamic_info.load}
+            self.gpu_dynamic_labels = {'gpu_vram_label': self.gpu_dynamic_info.vram_usage_total, 'gpu_clock_label': self.gpu_dynamic_info.clock, 'gpu_temp_label': self.gpu_dynamic_info.temperature, 'gpu_fspeed_label': self.gpu_dynamic_info.fan_speed_current, 'gpu_load_label': self.gpu_dynamic_info.load}
             cpu()
             gpu()
             time.sleep(1)

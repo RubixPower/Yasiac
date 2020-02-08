@@ -1,61 +1,112 @@
 # cython: language_level=3
-import subprocess, psutil
+import os
+import subprocess
+
+import psutil
+
 cdef class Cpu:
-    cdef dict __dict__
+    __slots__ = ('cached_cpuinfo', 'cached_name', 'cached_cores_threads',
+                 '__weakref__')
+    cdef list cached_cpuinfo
+    cdef str cached_name
+    cdef str cached_cores_threads
+
     def __init__(self):
         with open('/proc/cpuinfo', 'r') as f:
-            self.cpuinfo = f.read().splitlines()
+            self.cached_cpuinfo = f.read().splitlines()
+        self.cached_name = None
+        self.cached_cores_threads = None
+
+    @staticmethod
+    cdef str clean(str text):
+        return (text.split(' CPU @')[0]
+                    .replace('(R)', '').replace('(TM)', '')
+                    .strip())
+
+    cdef str c_name(self):
+        return next(
+            Cpu.clean(line.split(': ')[1])
+            for line in self.cached_cpuinfo
+            if line.startswith('model name\t')
+        )
 
     def name(self):
-        def clean(text):
-            cleaned = text.split(':')[1].split(' CPU @')[0].replace('(R)', '').replace('(TM)', '').strip()
-            return cleaned
-        name = [clean(line) for line in self.cpuinfo if 'model name' in line]
-        return name[0]
+        if self.cached_name is None:
+            self.cached_name = self.c_name()
+        return self.cached_name
 
-    cpdef str cores_threads(self): 
+    cdef str c_cores_threads(self):
         cdef str cores
-        cdef int thread_loop
-        cdef str threads
-        cdef str cores_threads
+        cdef int threads
+        cdef str line
+
         cores = ''
-        thread_loop = 0
-        for line in self.cpuinfo:
-            if 'cpu cores' in line:
-                cores = (line.split(':'    ).pop(1).replace(' ', ''))
-            elif 'processor' in line:
-                thread_loop = thread_loop + 1
-            else:
-                pass
-        threads = str(thread_loop)
-        cores_threads = str(f'{cores}/{threads}')
-        return cores_threads
+        threads = 0
+        for line in self.cached_cpuinfo:
+            if line.startswith('cpu cores\t'):
+                cores = line.split(': ')[1]
+            elif line.startswith('processor\t'):
+                threads = threads + 1
+        return f'{cores}/{threads}'
+
+    def cores_threads(self):
+        if self.cached_cores_threads is None:
+            self.cached_cores_threads = self.c_cores_threads()
+        return self.cached_cores_threads
 
     cpdef str temperature(self):
-        cdef list data
-        cdef int cpu_cores
+        cdef float sum_temps
+        cdef int num_cores
+        cdef object popen
         cdef str line
-        cdef str float_str
-        cdef int temp_int
-        cdef int sum_temps
+        cdef str temp_str
+
         sum_temps = 0
-        data = subprocess.getoutput("sensors -A").splitlines()
-        cpu_cores = 0 # gets how many cores you have
-        for line in data:
-            if 'Core' in line:
-                float_str = line.split(':        +')[-1].split('°C  (')[0]
-                temp_int = (int(float(float_str)))
-                sum_temps = sum_temps + temp_int
-                cpu_cores = cpu_cores + 1
-        
-        return (f'{str(round(sum_temps / cpu_cores))} [°C]')
+        num_cores = 0
+        with subprocess.Popen(
+                ('sensors', '-A'),
+                bufsize=1,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                close_fds=True,
+                shell=False,
+                universal_newlines=True,
+                env={ **os.environ, 'LC_ALL': 'C' }
+        ) as popen:
+            for line in popen.stdout:
+                if not line.startswith('Core '):
+                    continue
+
+                temp_str = line.split(': ')[1].split(' C  (')[0].strip()
+                sum_temps = sum_temps + float(temp_str)
+                num_cores = num_cores + 1
+
+        return f'{round(sum_temps / num_cores)} [°C]'
 
     cpdef str clock(self):
         cdef str clock
-        clock = subprocess.getoutput(f"lscpu | grep -F 'CPU MHz'").split(':')[1].strip().split('.')[0]
-        return (f'{clock} [MHz]')
-    cpdef str load(self):
-        cdef str load
-        load = '{:.0f}'.format(psutil.cpu_percent())
-        
-        return (f'{load} [%]')
+        cdef object popen
+
+        clock = None
+        with subprocess.Popen(
+                ('lscpu',),
+                bufsize=1,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                close_fds=True,
+                shell=False,
+                universal_newlines=True,
+                env={ **os.environ, 'LC_ALL': 'C' }
+        ) as popen:
+            for line in popen.stdout:
+                if not line.startswith('CPU MHz:'):
+                    continue
+                
+                clock = line.split(':')[1].strip().split('.')[0]
+
+        return f'{clock} [MHz]'
+
+    def load(self):
+        return f'{psutil.cpu_percent():.0f} [%]'
