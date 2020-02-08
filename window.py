@@ -135,7 +135,7 @@ class Window:
         return status
 
     def ControlInit(self):
-        if self.gpu_info.vendor == 'amd':
+        if self.gpu_static_info.vendor() == 'amd':
             mode = self.control.amd_fan_speed_mode_current()
             if mode == 'auto':
                 self.ControlGpuCheckButton.set_active(True)
@@ -143,7 +143,7 @@ class Window:
             else:
                 self.ControlGpuCheckButton.set_active(False)
                 self.ControlGpuScale.set_sensitive(True)
-        elif self.gpu_info.vendor == 'nvidia':
+        elif self.gpu_static_info.vendor() == 'nvidia':
             print('fan control not supported on nvidia gpus yet')
         else:
             print('If you have nvidia/amd dedicated gpu report this !!!')

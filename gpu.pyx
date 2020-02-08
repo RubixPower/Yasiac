@@ -44,9 +44,8 @@ cdef class Gpu():
 
 
     cpdef str vendor(self):
-        cdef str vendor
         vendor = subprocess.getoutput(f"lspci | grep VGA")
-        if 'AMD' in vendor:
+        if 'AMD/ATI' in vendor:
             return 'amd'
         elif 'NVIDIA' in vendor:
             return 'nvidia'
