@@ -8,7 +8,7 @@ How to download the files:
     2. Navigating to the folder of your liking and executing ```git clone  https://github.com/RubixPower/Yasiac.git``` in the terminal.                            
                                                                                                                                                                    
 Build instructions:                                                                                                                                                
-    YOu can build the .pyx files by navigating to apps root folder and executing ```python3 setup.py  build_ext --inplace && mv ./*.so ./compiled/ && rm *.c```.   
+    You can build the .pyx files by navigating to apps root folder and executing ```python3 setup.py  build_ext --inplace && mv ./*.so ./compiled/ && rm *.c```.   
                                                                                                                                                                    
 How to run the app:                                                                                                                                                
     Before you run: execute ```sensors-detect``` and for every choice select ``y`` so it detects everything.                                                       
