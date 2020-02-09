@@ -19,10 +19,18 @@ cdef class Cpu:
 
     @staticmethod
     cdef str clean(str text):
-        return (text.split(' CPU @')[0]
-                    .replace('(R)', '').replace('(TM)', '')
-                    .strip())
+        if text.startswith('Intel'):
+            return (text.split('  CPU @')[0]
+                        .replace('(R)', '').replace('(TM)', '')
+                    )
+        elif text.startswith('AMD'):
+            splitted = text.split(' ')
+            for i in range(2):
+                splitted.pop(-1)
+            return ' '.join(splitted)
 
+        else:
+            print('Cpu not found or supported')
     cdef str c_name(self):
         return next(
             Cpu.clean(line.split(': ')[1])
