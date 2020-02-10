@@ -8,7 +8,7 @@ A simple app that lets you get some system info and control gpu fan/s
     in the terminal.
 ### Build instructions:
     You can build the .pyx files by navigating to apps root folder and executing: 
-    python3 setup.py  build_ext --inplace && mv ./*.so ./compiled/ && rm *.c     int the terminal.   
+    python3 setup.py  build_ext --inplace && mv ./*.so ./compiled/ && rm *.c     in the terminal.   
                                                                                                                                                                    
 ### How to run the app:
     Before you run:
