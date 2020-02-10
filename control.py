@@ -38,5 +38,4 @@ class Control():
 
     def amd_fan_speed_current(self):
         current = subprocess.getoutput(f'cat {self.fan_speed_file}')
-        current = int(current)
-        return current
+        return int(current)

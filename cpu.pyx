@@ -3,7 +3,7 @@ import os
 import subprocess
 
 import psutil
-
+from libc.stdio cimport FILE, fopen, fclose
 cdef class Cpu:
     __slots__ = ('cached_cpuinfo', 'cached_name', 'cached_cores_threads',
                  '__weakref__')
@@ -11,7 +11,7 @@ cdef class Cpu:
     cdef str cached_name
     cdef str cached_cores_threads
 
-    def __init__(self):
+    def __cinit__(self):
         with open('/proc/cpuinfo', 'r') as f:
             self.cached_cpuinfo = f.read().splitlines()
         self.cached_name = None
@@ -20,7 +20,7 @@ cdef class Cpu:
     @staticmethod
     cdef str clean(str text):
         if text.startswith('Intel'):
-            return (text.split('  CPU @')[0]
+            return (text.split(' CPU @')[0]
                         .replace('(R)', '').replace('(TM)', '')
                     )
         elif text.startswith('AMD'):

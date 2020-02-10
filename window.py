@@ -127,6 +127,7 @@ class Window:
         else:
             self.ControlGpuCheckButton.set_active(False)
             self.ControlGpuScale.set_sensitive(True)
+            self.ControlGpuScale.set_value(self.control.amd_fan_speed_current() /2.55)
 
     def FanUpdater(self):
     #updates the fan adjustment value every 1 sec WHEN check button is not active
