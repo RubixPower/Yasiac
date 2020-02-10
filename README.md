@@ -14,13 +14,13 @@ A simple app that lets you get some system info and control gpu fan/s
     Before you run:
       1. Execute sensors-detect and for every choice select "Yes" so it detects everything.
       2. Navigate to apps root folder after building process and executing sudo python app.py
-      in the terminal.                                                                                                                                               
-### Dependencies:                                                                                                                                              
-1. Packages:                                                                                                                                                       
-    >**python3**                                                                                                                                                      
-    >**glxinfo or mesa-demos**                                                                                                                                        
-    >**lm-sensors**                                                                                                                                                    
-    >**cython**                                                                                                                                                       
-    >**rocm-smi**                                                                                                                                                     
-2. Python packages/modules:                                                                                                                                        
+      in the terminal.
+### Dependencies:
+1. Packages:
+    >**python3**
+    >**glxinfo or mesa-demos**
+    >**lm-sensors**
+    >**cython**
+    >**rocm-smi**
+2. Python packages/modules:
     >**python-psutil**
