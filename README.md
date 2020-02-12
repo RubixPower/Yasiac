@@ -1,7 +1,7 @@
 # Yasiac                                                                                                                                                           
 Yet Another System Info And Control app                                                                                                                            
 A simple app that lets you get some system info and control gpu fan/s                                                                                              
-                                                                                                                                                                   
+**Currently only supports AMD gpus**                                                                                                                                                                   
 ### How to download the files:
     1. Download the ZIP file and extract it wherever you want it.
     1. Navigate to the folder of your liking and execute:     git clone  https://github.com/RubixPower/Yasiac.git     
