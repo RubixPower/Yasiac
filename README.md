@@ -17,10 +17,10 @@ A simple app that lets you get some system info and control gpu fan/s
       in the terminal.
 ### Dependencies:
 1. Packages:
-    >**python3**
-    >**glxinfo or mesa-demos**
-    >**lm-sensors**
-    >**cython**
-    >**rocm-smi**
+    >**python3**                                                                                                                                                                                                                                                                                                                                                                     
+    >**glxinfo or mesa-demos**                                                                                                                                                                                                                                                                                                                                                                     
+    >**lm-sensors**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+    >**cython**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+    >**rocm-smi**                                                                                                                       
 2. Python packages/modules:
     >**python-psutil**
