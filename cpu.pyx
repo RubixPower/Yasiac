@@ -3,19 +3,21 @@ import os
 import subprocess
 
 import psutil
-from libc.stdio cimport FILE, fopen, fclose
+from libc.stdio cimport FILE, fopen, fclose, printf
 cdef class Cpu:
-    __slots__ = ('cached_cpuinfo', 'cached_name', 'cached_cores_threads',
+    __slots__ = ('cached_cpuinfo', 'cached_name', 'cached_cores_threads', 'cores',
                  '__weakref__')
     cdef list cached_cpuinfo
     cdef str cached_name
     cdef str cached_cores_threads
+    cdef str cores
 
     def __cinit__(self):
         with open('/proc/cpuinfo', 'r') as f:
             self.cached_cpuinfo = f.read().splitlines()
         self.cached_name = None
         self.cached_cores_threads = None
+        self.cores = None
 
     @staticmethod
     cdef str clean(str text):
@@ -44,18 +46,16 @@ cdef class Cpu:
         return self.cached_name
 
     cdef str c_cores_threads(self):
-        cdef str cores
         cdef int threads
         cdef str line
 
-        cores = ''
         threads = 0
         for line in self.cached_cpuinfo:
             if line.startswith('cpu cores\t'):
-                cores = line.split(': ')[1]
+                self.cores = line.split(': ')[1]
             elif line.startswith('processor\t'):
                 threads = threads + 1
-        return f'{cores}/{threads}'
+        return f'{self.cores}/{threads}'
 
     def cores_threads(self):
         if self.cached_cores_threads is None:

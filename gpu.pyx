@@ -3,7 +3,6 @@ import subprocess
 cdef class Gpu():
     cdef dict __dict__
     def __init__(self):
-        self.gpu_hwmon_path = subprocess.getoutput()
         self.sensors = subprocess.getoutput("sensors -A").splitlines()
         self.glxinfo = subprocess.getoutput("glxinfo -B").splitlines()
         self.amdgpu_info = subprocess.getoutput("cat /sys/kernel/debug/dri/0/amdgpu_pm_info").splitlines()
