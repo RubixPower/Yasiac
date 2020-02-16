@@ -2,8 +2,7 @@
 import subprocess
 import os
 
-global RPM_file_path
-global amdgpu_pm_filepath
+global RPM_file_path, amdgpu_pm_filepath, vraminfo_filepath, vram_total, vram_OnePercentage
 with subprocess.Popen(
     ('find', '/sys/devices/', '-name', 'fan1_input'),
     bufsize=1,
@@ -31,9 +30,25 @@ with subprocess.Popen(
     env={ **os.environ, 'LC_ALL': 'C' }
     ) as popen:
         for line in popen.stdout:
-            amdgpu_pm_filepath = line.strip()# works
+            amdgpu_pm_filepath = line.strip()
 
+with subprocess.Popen(
+    ('find', '/sys/devices/', '-name', 'mem_info_vram_used'),
+    bufsize=1,
+    stdin=subprocess.DEVNULL,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.DEVNULL,
+    close_fds=True,
+    shell=False,
+    universal_newlines=True,
+    env={ **os.environ, 'LC_ALL': 'C' }
+    ) as popen:
+        for line in popen.stdout:
+            vraminfo_filepath = line.strip().replace('mem_info_vram_used', '')
 
+with open(f'{vraminfo_filepath}mem_info_vram_total') as data:
+                vram_total =  int(int(data.read()) / 1048576)
+                vram_OnePercentage = vram_total / 100
 cdef class Gpu():
     cdef dict __dict__
     __slots__ = ('glxinfo', 'amdgpu_info',
@@ -76,29 +91,21 @@ cdef class Gpu():
         for line in self.glxinfo:
             if 'Device: ' in line:
                 return line.split('Device: ')[1].replace('(TM) ', '').split(' (')[0]
+                
+    cpdef int vram_usage_percentage(self):
+        with open(f'{vraminfo_filepath}mem_busy_percent', 'r') as data:
+            return int(data.read().strip())
 
-    cpdef int vram_total(self):
-        cdef int vram
-        cdef str line
-        for line in self.glxinfo:
-            if 'Video memory:' in line:
-                return int(line.split(': ')[1].replace('MB', '').strip())
-                
-    cpdef str vram_usage_percentage(self):
-        cdef list data
-        data = (subprocess.getoutput("rocm-smi --showmemuse")).splitlines()
-        for line in data:
-            if 'GPU memory use (%)' in line:
-                return line.split('GPU memory use (%):')[-1].strip()
-                
     cpdef str vram_usage_total(self):
-        cdef int vram_total, vram_usage_percentage, vram_usage
-        cdef str vram_usage_total
-        vram_total = self.vram_total()
-        vram_usage_percentage = int(self.vram_usage_percentage())
-        one_percentage = vram_total / 100
-        usage = round(one_percentage * vram_usage_percentage)
-        return (f'~{usage}/{vram_total}')
+        # cdef int vram_usage_percentage, vram_usage
+        # vram_usage_percentage = int(self.vram_usage_percentage())
+        # one_percentage = vram_total / 100
+        # usage = round(vram_OnePercentage * vram_usage_percentage)
+        # return (f'~{usage}/{vram_total}')
+
+        # needs to be tested !! the code above & below
+        with open(f'{vraminfo_filepath}mem_info_vram_used') as data:
+            return f'{round(int(data.read().strip()) / 1048576)}/{vram_total}'
 
     cpdef str clock(self):
         cdef str line
