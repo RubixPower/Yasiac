@@ -1,11 +1,75 @@
 # cython: language_level=3
 import subprocess
+import os
+
+global RPM_file_path
+global amdgpu_pm_filepath
+with subprocess.Popen(
+    ('find', '/sys/devices/', '-name', 'temp1_input'),
+    bufsize=1,
+    stdin=subprocess.DEVNULL,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.DEVNULL,
+    close_fds=True,
+    shell=False,
+    universal_newlines=True,
+    env={ **os.environ, 'LC_ALL': 'C' }
+    ) as popen:
+        for line in popen.stdout:
+            RPM_file_path = line.strip()
+            break
+
+with subprocess.Popen(
+    ('find', '/sys/kernel/debug/dri/', '-name', 'amdgpu_pm_info'),
+    bufsize=1,
+    stdin=subprocess.DEVNULL,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.DEVNULL,
+    close_fds=True,
+    shell=False,
+    universal_newlines=True,
+    env={ **os.environ, 'LC_ALL': 'C' }
+    ) as popen:
+        for line in popen.stdout:
+            amdgpu_pm_filepath = line.strip()# works
+
+
 cdef class Gpu():
     cdef dict __dict__
-    def __init__(self):
-        self.sensors = subprocess.getoutput("sensors -A").splitlines()
-        self.glxinfo = subprocess.getoutput("glxinfo -B").splitlines()
-        self.amdgpu_info = subprocess.getoutput("cat /sys/kernel/debug/dri/0/amdgpu_pm_info").splitlines()
+    __slots__ = ('glxinfo', 'amdgpu_info',
+                '__weakref__')
+    cdef list glxinfo, amdgpu_info
+
+    def __cinit__(self):
+        self.glxinfo = []
+        self.amdgpu_info = []
+        with subprocess.Popen(
+            ('glxinfo', '-B'),
+            bufsize=1,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            close_fds=True,
+            shell=False,
+            universal_newlines=True,
+            env={ **os.environ, 'LC_ALL': 'C' }
+            ).stdout as popen:
+                for line in popen:
+                    self.glxinfo.append(line)
+
+        with subprocess.Popen(
+            ('cat', amdgpu_pm_filepath),
+            bufsize=1,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            close_fds=True,
+            shell=False,
+            universal_newlines=True,
+            env={ **os.environ, 'LC_ALL': 'C' }
+            ).stdout as popen:
+                for line in popen:
+                    self.amdgpu_info.append(line)
 
     cpdef str name(self):
         cpdef str line
@@ -39,20 +103,18 @@ cdef class Gpu():
     cpdef str clock(self):
         cdef str line
         for line in self.amdgpu_info:
-            if '(SCLK)' in line: 
+            if '(SCLK)' in line:
                 return f"{line.split(' MHz (SCLK)')[0].strip()} [MHz]"
 
     cpdef str fan_speed_current(self):
-        cdef str line
-        for line in self.sensors:
-            if 'fan1:' in line:
-                return line.split('fan1:')[1].split('  (')[0].strip()
+        with open(RPM_file_path, 'r') as data:
+            return data.read().replace('\n', '')
 
     cpdef str temperature(self):
         cdef str line
         for line in self.amdgpu_info:
             if 'GPU Temperature:' in line:
-                return line.split('GPU Temperature: ')[1].replace(' C', ' °C')
+                return line.split('GPU Temperature: ')[1].replace(' C', ' °C').strip()
 
     cpdef str load(self):
         cdef str line

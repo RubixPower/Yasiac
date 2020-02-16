@@ -1,18 +1,30 @@
 # cython: language_level=3
-import os
-import subprocess
-
-import psutil
+import os, subprocess, psutil
 from libc.stdio cimport FILE, fopen, fclose, printf
+
+
+global cputemp_path
+with subprocess.Popen(
+    ('find', '/sys/devices/platform/', '-name', 'temp1_input'),
+    bufsize=1,
+    stdin=subprocess.DEVNULL,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.DEVNULL,
+    close_fds=True,
+    shell=False,
+    universal_newlines=True,
+    env={ **os.environ, 'LC_ALL': 'C' }
+    ) as popen:
+        for line in popen.stdout:
+                cputemp_path = line.strip()
+
 cdef class Cpu:
     __slots__ = ('cached_cpuinfo', 'cached_name', 'cached_cores_threads', 'cores',
                  '__weakref__')
     cdef list cached_cpuinfo
-    cdef str cached_name
-    cdef str cached_cores_threads
-    cdef str cores
+    cdef str cached_name, cached_cores_threads, cores
 
-    def __cinit__(self):
+    def __init__(self):
         with open('/proc/cpuinfo', 'r') as f:
             self.cached_cpuinfo = f.read().splitlines()
         self.cached_name = None
@@ -62,40 +74,13 @@ cdef class Cpu:
             self.cached_cores_threads = self.c_cores_threads()
         return self.cached_cores_threads
 
-    cpdef str temperature(self):
-        cdef float sum_temps
-        cdef int num_cores
-        cdef object popen
-        cdef str line
-        cdef str temp_str
-
-        sum_temps = 0
-        num_cores = 0
-        with subprocess.Popen(
-                ('sensors', '-A'),
-                bufsize=1,
-                stdin=subprocess.DEVNULL,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
-                close_fds=True,
-                shell=False,
-                universal_newlines=True,
-                env={ **os.environ, 'LC_ALL': 'C' }
-        ) as popen:
-            for line in popen.stdout:
-                if not line.startswith('Core '):
-                    continue
-
-                temp_str = line.split(': ')[1].split(' C  (')[0].strip()
-                sum_temps = sum_temps + float(temp_str)
-                num_cores = num_cores + 1
-
-        return f'{round(sum_temps / num_cores)} [°C]'
+    cpdef temperature(self):
+        with open(cputemp_path, 'r') as file_data:
+            return int(file_data.read()) / 1000
 
     cpdef str clock(self):
         cdef str clock
         cdef object popen
-
         clock = None
         with subprocess.Popen(
                 ('lscpu',),
