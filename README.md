@@ -7,9 +7,7 @@ A simple app that lets you get some system info and control gpu fan/s
     1. Navigate to the folder of your liking and execute:     git clone  https://github.com/RubixPower/Yasiac.git     
     in the terminal.
 ### How to run the app:
-    Before you run:
-      1. Execute sensors-detect and for every choice select "Yes" so it detects everything AND
-      2. Navigate to apps root folder after building process and executing sudo python app.py
+      Navigate to apps root folder after building process and executing sudo python app.py
       in the terminal.
       
 ### Build instructions:
