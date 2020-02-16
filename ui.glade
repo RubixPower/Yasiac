@@ -355,7 +355,7 @@
                                             <property name="name">cpu_name_label</property>
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label" translatable="yes">		Name</property>
+                                            <property name="label" translatable="yes">Data</property>
                                             <style>
                                               <class name="DynamicInfoLabel"/>
                                             </style>
@@ -429,7 +429,7 @@
                                             <property name="can_focus">False</property>
                                             <property name="halign">end</property>
                                             <property name="valign">end</property>
-                                            <property name="label" translatable="yes">		Name</property>
+                                            <property name="label" translatable="yes">Data</property>
                                             <style>
                                               <class name="DynamicInfoLabel"/>
                                             </style>
@@ -487,7 +487,7 @@
                                             <property name="can_focus">False</property>
                                             <property name="halign">end</property>
                                             <property name="valign">end</property>
-                                            <property name="label" translatable="yes">		Name</property>
+                                            <property name="label" translatable="yes">Data</property>
                                             <style>
                                               <class name="DynamicInfoLabel"/>
                                             </style>
@@ -545,7 +545,7 @@
                                             <property name="can_focus">False</property>
                                             <property name="halign">end</property>
                                             <property name="valign">end</property>
-                                            <property name="label" translatable="yes">		Name</property>
+                                            <property name="label" translatable="yes">Data</property>
                                             <style>
                                               <class name="DynamicInfoLabel"/>
                                             </style>
@@ -603,7 +603,7 @@
                                             <property name="can_focus">False</property>
                                             <property name="halign">end</property>
                                             <property name="valign">end</property>
-                                            <property name="label" translatable="yes">		Name</property>
+                                            <property name="label" translatable="yes">Data</property>
                                             <style>
                                               <class name="DynamicInfoLabel"/>
                                             </style>
@@ -954,7 +954,7 @@
                                             <property name="name">gpu_name_label</property>
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label" translatable="yes">		Name</property>
+                                            <property name="label" translatable="yes">Data</property>
                                             <style>
                                               <class name="DynamicInfoLabel"/>
                                             </style>
@@ -1013,7 +1013,7 @@
                                             <property name="name">gpu_vram_label</property>
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label" translatable="yes">		Name</property>
+                                            <property name="label" translatable="yes">Data</property>
                                             <style>
                                               <class name="DynamicInfoLabel"/>
                                             </style>
@@ -1072,7 +1072,7 @@
                                             <property name="name">gpu_clock_label</property>
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label" translatable="yes">		Name</property>
+                                            <property name="label" translatable="yes">Data</property>
                                             <style>
                                               <class name="DynamicInfoLabel"/>
                                             </style>
@@ -1131,7 +1131,7 @@
                                             <property name="name">gpu_temp_label</property>
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label" translatable="yes">		Name</property>
+                                            <property name="label" translatable="yes">Data</property>
                                             <style>
                                               <class name="DynamicInfoLabel"/>
                                             </style>
@@ -1190,7 +1190,7 @@
                                             <property name="name">gpu_fspeed_label</property>
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label" translatable="yes">		Name</property>
+                                            <property name="label" translatable="yes">Data</property>
                                             <style>
                                               <class name="DynamicInfoLabel"/>
                                             </style>
@@ -1249,7 +1249,7 @@
                                             <property name="name">gpu_load_label</property>
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label" translatable="yes">		Name</property>
+                                            <property name="label" translatable="yes">Data</property>
                                             <style>
                                               <class name="DynamicInfoLabel"/>
                                             </style>
@@ -1410,7 +1410,6 @@
                                     <child>
                                       <object class="GtkSeparator">
                                         <property name="width_request">75</property>
-                                        <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <style>
                                           <class name="Separator"/>
@@ -1425,7 +1424,6 @@
                                     <child>
                                       <object class="GtkLabel">
                                         <property name="width_request">190</property>
-                                        <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="label" translatable="yes">Used [%]			</property>
                                         <property name="use_markup">True</property>
@@ -1439,6 +1437,9 @@
                                         <property name="position">1</property>
                                       </packing>
                                     </child>
+                                    <style>
+                                      <class name="Invisible"/>
+                                    </style>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -1452,7 +1453,6 @@
                                     <child>
                                       <object class="GtkSeparator">
                                         <property name="width_request">75</property>
-                                        <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <style>
                                           <class name="Separator"/>
@@ -1467,7 +1467,6 @@
                                     <child>
                                       <object class="GtkLabel">
                                         <property name="width_request">190</property>
-                                        <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="label" translatable="yes">Clock [MHz]			</property>
                                         <property name="use_markup">True</property>
@@ -1481,6 +1480,9 @@
                                         <property name="position">1</property>
                                       </packing>
                                     </child>
+                                    <style>
+                                      <class name="Invisible"/>
+                                    </style>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -1524,7 +1526,7 @@
                                         <property name="name">ram_manufacturer_label</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">		Name</property>
+                                        <property name="label" translatable="yes">Data</property>
                                         <style>
                                           <class name="DynamicInfoLabel"/>
                                         </style>
@@ -1567,7 +1569,7 @@
                                         <property name="name">ram_capacity_label</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">		Name</property>
+                                        <property name="label" translatable="yes">Data</property>
                                         <style>
                                           <class name="DynamicInfoLabel"/>
                                         </style>
@@ -1608,7 +1610,6 @@
                                         <property name="name">ram_used_label</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">		Name</property>
                                         <style>
                                           <class name="DynamicInfoLabel"/>
                                         </style>
@@ -1649,7 +1650,6 @@
                                         <property name="name">ram_clock_label</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">		Name</property>
                                         <style>
                                           <class name="DynamicInfoLabel"/>
                                         </style>

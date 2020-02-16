@@ -49,7 +49,10 @@
     opacity: 0;
 }
 
-
+/* Global */
+.Invisible {
+    opacity:0;
+}
 
 
 
