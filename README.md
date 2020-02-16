@@ -20,3 +20,4 @@ A simple app that lets you get some system info and control gpu fan/s
     >**rocm-smi**         
 2. Python packages:
     >**psutil:** ``pip3 install psutil --user``
+    >**cython**  ``pip3 install cython --user``
