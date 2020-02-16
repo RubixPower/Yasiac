@@ -17,6 +17,5 @@ A simple app that lets you get some system info and control gpu fan/s
     >**python3**                                                                                                                                                                                                                                                                                                                                                                     
     >**glxinfo or mesa-demos**                                                                                                                                                                                                                                                                                                                                                                     
     >**cython**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-    >**rocm-smi**                                                                                                                       
-2. Python packages/modules:
+    >**rocm-smi**  
     >**python-psutil**
