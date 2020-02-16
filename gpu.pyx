@@ -5,7 +5,7 @@ import os
 global RPM_file_path
 global amdgpu_pm_filepath
 with subprocess.Popen(
-    ('find', '/sys/devices/virtual', '-name', 'temp1_input'),
+    ('find', '/sys/devices/', '-name', 'fan1_input'),
     bufsize=1,
     stdin=subprocess.DEVNULL,
     stdout=subprocess.PIPE,
