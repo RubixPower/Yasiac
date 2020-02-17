@@ -14,9 +14,9 @@ with subprocess.Popen(
     shell=False,
     universal_newlines=True,
     env={ **os.environ, 'LC_ALL': 'C' }
-    ) as popen:
-        for line in popen.stdout:
-                cputemp_path = line.strip()
+) as popen:
+    for line in popen.stdout:
+            cputemp_path = line.strip()
 
 cdef class Cpu:
     __slots__ = ('cached_cpuinfo', 'cached_name', 'cached_cores_threads', 'cores',

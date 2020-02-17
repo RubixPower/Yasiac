@@ -13,10 +13,10 @@ with subprocess.Popen(
     shell=False,
     universal_newlines=True,
     env={ **os.environ, 'LC_ALL': 'C' }
-    ) as popen:
-        for line in popen.stdout:
-            RPM_file_path = line.strip()
-            break
+) as popen:
+    for line in popen.stdout:
+        RPM_file_path = line.strip()
+        break
 
 with subprocess.Popen(
     ('find', '/sys/kernel/debug/dri/', '-name', 'amdgpu_pm_info'),
@@ -28,9 +28,9 @@ with subprocess.Popen(
     shell=False,
     universal_newlines=True,
     env={ **os.environ, 'LC_ALL': 'C' }
-    ) as popen:
-        for line in popen.stdout:
-            amdgpu_pm_filepath = line.strip()
+) as popen:
+    for line in popen.stdout:
+        amdgpu_pm_filepath = line.strip()
 
 with subprocess.Popen(
     ('find', '/sys/devices/', '-name', 'mem_info_vram_used'),
@@ -42,9 +42,9 @@ with subprocess.Popen(
     shell=False,
     universal_newlines=True,
     env={ **os.environ, 'LC_ALL': 'C' }
-    ) as popen:
-        for line in popen.stdout:
-            vraminfo_filepath = line.strip().replace('mem_info_vram_used', '')
+) as popen:
+    for line in popen.stdout:
+        vraminfo_filepath = line.strip().replace('mem_info_vram_used', '')
 
 with open(f'{vraminfo_filepath}mem_info_vram_total') as data:
                 vram_total =  int(int(data.read()) / 1048576)
