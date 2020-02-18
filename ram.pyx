@@ -2,7 +2,8 @@
 import os
 import subprocess
 
-class Ram():
+
+class Ram:
     __slots__ = ('__weakref__',)
 
     @staticmethod
@@ -16,7 +17,7 @@ class Ram():
                 close_fds=True,
                 shell=False,
                 universal_newlines=True,
-                env={ **os.environ, 'LC_ALL': 'C' }
+                env={**os.environ, 'LC_ALL': 'C'}
         ) as popen:
             for line in popen.stdout:
                 if not line.startswith('Total online memory:'):
@@ -40,7 +41,7 @@ class Ram():
                 close_fds=True,
                 shell=False,
                 universal_newlines=True,
-                env={ **os.environ, 'LC_ALL': 'C' }
+                env={**os.environ, 'LC_ALL': 'C'}
         ) as popen:
             for line in popen.stdout:
                 if not line.startswith('\tManufacturer: '):

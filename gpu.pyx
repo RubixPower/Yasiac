@@ -1,58 +1,43 @@
 # cython: language_level=3
 import subprocess
 import os
+from get_path import get_path, FileData
 
-global RPM_file_path, amdgpu_pm_filepath, vraminfo_filepath, vram_total, vram_OnePercentage
-with subprocess.Popen(
-    ('find', '/sys/devices/', '-name', 'fan1_input'),
-    bufsize=1,
-    stdin=subprocess.DEVNULL,
-    stdout=subprocess.PIPE,
-    stderr=subprocess.DEVNULL,
-    close_fds=True,
-    shell=False,
-    universal_newlines=True,
-    env={ **os.environ, 'LC_ALL': 'C' }
-) as popen:
-    for line in popen.stdout:
-        RPM_file_path = line.strip()
-        break
 
-with subprocess.Popen(
-    ('find', '/sys/kernel/debug/dri/', '-name', 'amdgpu_pm_info'),
-    bufsize=1,
-    stdin=subprocess.DEVNULL,
-    stdout=subprocess.PIPE,
-    stderr=subprocess.DEVNULL,
-    close_fds=True,
-    shell=False,
-    universal_newlines=True,
-    env={ **os.environ, 'LC_ALL': 'C' }
-) as popen:
-    for line in popen.stdout:
-        amdgpu_pm_filepath = line.strip()
+def static_variables():
 
-with subprocess.Popen(
-    ('find', '/sys/devices/', '-name', 'mem_info_vram_used'),
-    bufsize=1,
-    stdin=subprocess.DEVNULL,
-    stdout=subprocess.PIPE,
-    stderr=subprocess.DEVNULL,
-    close_fds=True,
-    shell=False,
-    universal_newlines=True,
-    env={ **os.environ, 'LC_ALL': 'C' }
-) as popen:
-    for line in popen.stdout:
-        vraminfo_filepath = line.strip().replace('mem_info_vram_used', '')
+    # /sys/devices
+    global RPM_file_path, vraminfo_filepath, vram_total, vram_OnePercentage
+    RPM_file_class = FileData('fan1_input')
+    # this file is only used to find the right subfolder
+    vram_info_class = FileData('mem_info_vram_used')
+    file_data = {RPM_file_class.id: RPM_file_class,
+                 vram_info_class.id: vram_info_class}
+    get_path(file_data, '/sys/devices')
+    # gets the path for the RPM data file
+    RPM_file_path = file_data.get('fan1_input').path
+    # gets the vram info path
+    vram_info_tmpvar = file_data.get('mem_info_vram_used')
+    vraminfo_filepath = vram_info_tmpvar.path.replace('mem_info_vram_used', '')
+    with open(f'{vraminfo_filepath}mem_info_vram_total') as data:
+        vram_total = int(data.read()) / 1048576
+        vram_OnePercentage = vram_total / 100
 
-with open(f'{vraminfo_filepath}mem_info_vram_total') as data:
-                vram_total =  int(int(data.read()) / 1048576)
-                vram_OnePercentage = vram_total / 100
-cdef class Gpu():
+    # /sys/kernel/debug/dri/
+    global amdgpu_pm_filepath
+    amdgpuInfo_file_class = FileData('amdgpu_pm_info')
+    file_data = {amdgpuInfo_file_class.id: amdgpuInfo_file_class}
+    get_path(file_data, '/sys/kernel/debug/dri')
+    amdgpu_pm_filepath = file_data.get('amdgpu_pm_info').path
+
+
+static_variables()
+
+
+cdef class Gpu:
     cdef dict __dict__
     __slots__ = ('glxinfo', 'amdgpu_info',
-                '__weakref__')
+                 '__weakref__')
     cdef list glxinfo, amdgpu_info
 
     def __cinit__(self):
@@ -67,31 +52,21 @@ cdef class Gpu():
             close_fds=True,
             shell=False,
             universal_newlines=True,
-            env={ **os.environ, 'LC_ALL': 'C' }
+            env={**os.environ, 'LC_ALL': 'C'}
             ).stdout as popen:
                 for line in popen:
                     self.glxinfo.append(line)
 
-        with subprocess.Popen(
-            ('cat', amdgpu_pm_filepath),
-            bufsize=1,
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            close_fds=True,
-            shell=False,
-            universal_newlines=True,
-            env={ **os.environ, 'LC_ALL': 'C' }
-            ).stdout as popen:
-                for line in popen:
-                    self.amdgpu_info.append(line)
+        with open(amdgpu_pm_filepath, 'r') as amdgpu_data:
+            self.amdgpu_info = amdgpu_data.read().splitlines()
 
     cpdef str name(self):
         cpdef str line
         for line in self.glxinfo:
             if 'Device: ' in line:
-                return line.split('Device: ')[1].replace('(TM) ', '').split(' (')[0]
-                
+                tmp_var = line.split('Device: ')[1]
+                return tmp_var.replace('(TM) ', '').split(' (')[0]
+
     cpdef int vram_usage_percentage(self):
         with open(f'{vraminfo_filepath}mem_busy_percent', 'r') as data:
             return int(data.read().strip())
@@ -121,7 +96,8 @@ cdef class Gpu():
         cdef str line
         for line in self.amdgpu_info:
             if 'GPU Temperature:' in line:
-                return line.split('GPU Temperature: ')[1].replace(' C', ' °C').strip()
+                temp_var = line.split('GPU Temperature: ')[1]
+                return temp_var.replace(' C', ' °C').strip()
 
     cpdef str load(self):
         cdef str line

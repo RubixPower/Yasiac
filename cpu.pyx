@@ -1,26 +1,23 @@
 # cython: language_level=3
-import os, subprocess, psutil
-from libc.stdio cimport FILE, fopen, fclose, printf
+import os
+import subprocess
+import psutil
+from get_path import get_path, FileData
 
 
-global cputemp_path
-with subprocess.Popen(
-    ('find', '/sys/devices/platform/', '-name', 'temp1_input'),
-    bufsize=1,
-    stdin=subprocess.DEVNULL,
-    stdout=subprocess.PIPE,
-    stderr=subprocess.DEVNULL,
-    close_fds=True,
-    shell=False,
-    universal_newlines=True,
-    env={ **os.environ, 'LC_ALL': 'C' }
-) as popen:
-    for line in popen.stdout:
-            cputemp_path = line.strip()
+def static_variables():
+    global cputemp_path
+    cputemp_class = FileData('temp1_input')
+    file_data = {cputemp_class.id: cputemp_class}
+    get_path(file_data, '/sys/devices/platform/')
+    cputemp_path = file_data.get('temp1_input').path
+
+
+static_variables()
 
 cdef class Cpu:
-    __slots__ = ('cached_cpuinfo', 'cached_name', 'cached_cores_threads', 'cores',
-                 '__weakref__')
+    __slots__ = ('cached_cpuinfo', 'cached_name', 'cached_cores_threads',
+                 'cores', '__weakref__')
     cdef list cached_cpuinfo
     cdef str cached_name, cached_cores_threads, cores
 
@@ -91,12 +88,12 @@ cdef class Cpu:
                 close_fds=True,
                 shell=False,
                 universal_newlines=True,
-                env={ **os.environ, 'LC_ALL': 'C' }
+                env={**os.environ, 'LC_ALL': 'C'}
         ) as popen:
             for line in popen.stdout:
                 if not line.startswith('CPU MHz:'):
                     continue
-                
+
                 clock = line.split(':')[1].strip().split('.')[0]
 
         return f'{clock} [MHz]'

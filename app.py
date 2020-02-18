@@ -1,5 +1,3 @@
-import subprocess
-
 from compiled import cpu, gpu, ram
 from window import Window
 app = Window
