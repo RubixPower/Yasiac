@@ -10,12 +10,9 @@ A simple app that lets you get some system info and control gpu fan/s
       Navigate to apps root folder after building process and executing sudo python app.py
       in the terminal.
       
-### Build instructions:
-    You can build the .pyx files by navigating to apps root folder and executing:   ./build.sh      in the terminal.
 ### Dependencies:
 1. Packages:
     >**python3**                                                                                                                                                                                                                                                                                                                                                                     
-    >**glxinfo or mesa-demos**                                                                                                                                                                                                                                                                                                                                                                     
-    >**cython**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+    >**glxinfo or mesa-demos**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 2. Python packages:
     > Execute pip3_install.sh
