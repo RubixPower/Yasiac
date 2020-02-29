@@ -1,6 +1,9 @@
-from compiled import cpu, gpu, ram
+import cpu, gpu, ram
 from window import Window
-from elevate import elevate
-elevate() #  runs as root
-app = Window
-app(cpu.Cpu, gpu.Gpu, ram.Ram).main()
+import os
+from get_path import FileData
+if os.getuid() == 0:
+    app = Window
+    app(cpu.Cpu, gpu.Gpu, ram.Ram, FileData()).main()
+else:
+    quit()

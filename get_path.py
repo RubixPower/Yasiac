@@ -2,24 +2,18 @@ import os
 
 
 class FileData:
-    def __init__(self, id):
-        self.id = id
-        self.path = ''
+    def __init__(self):
+        self.cpu_path = ''
+        self.gpu_path = ''
+        self.get_path()
 
-
-def get_path(file_data, path):
-    #cdef int counter
-    counter = len(file_data)
-    # gets the lenght of file_data dict and servers
-    # as a counter for when to break the loop
-    #cdef str root, dirs, files, data
-    for root, dirs, files in os.walk(path):  # loops through folders and files
-        for data in file_data:
-            if file_data.get(data).id in files:
-                if file_data.get(data).path != '':
-                    print("ERROR: DUPLICATE FILE")
-                else:
-                    file_data.get(data).path = os.path.join(root, data)
-                    counter -= 1
-        if counter == 0:
-            return file_data
+    def get_path(self):
+        path = '/sys/class/hwmon/'
+        for dirs in os.listdir(path):
+            current_path = os.path.join(path, dirs)
+            with open(os.path.join(current_path, 'name')) as FileObj:
+                name_file_data = FileObj.read().strip()
+            if name_file_data == 'coretemp':
+                self.cpu_path = current_path
+            elif name_file_data == 'amdgpu':
+                self.gpu_path = current_path
