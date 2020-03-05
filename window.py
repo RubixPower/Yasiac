@@ -50,9 +50,7 @@ class Window:
     __slots__ = (
         "path", "builder",
         "control", "window",
-        "cpu_info", "gpu_info", "ram_info", "FileData",
-        "cpu_static_info", "gpu_static_info", "ram_static_info",
-        "cpu_labels", "gpu_labels", "ram_labels",
+        "cpu_info", "gpu_info", "FileData",
         "ControlGpuCheckButton", "ControlGpuScale", "ControlGpuAdjustment",
         "threads_run",
         "FanUpdater_loop",
@@ -80,22 +78,21 @@ class Window:
 
         self.cpu_info = cpu_class
         self.gpu_info = gpu_class
-        self.ram_info = ram_class
         self.FileData = FileData
 
         #  INFO
         def static_info():
-            self.cpu_static_info = cpu_class(self.FileData)
-            self.gpu_static_info = gpu_class(self.FileData)
-            self.ram_static_info = ram_class()
+            cpu_static_info = cpu_class(self.FileData)
+            gpu_static_info = gpu_class(self.FileData)
+            ram_static_info = ram_class()
             cpu_labels = {
-                'cpu_name_label': self.cpu_static_info.name,
-                'cpu_cores_threads_label': self.cpu_static_info.cores_threads
+                'cpu_name_label': cpu_static_info.name,
+                'cpu_cores_threads_label': cpu_static_info.cores_threads
                 }
-            gpu_labels = {'gpu_name_label': self.gpu_static_info.name}
+            gpu_labels = {'gpu_name_label': gpu_static_info.name}
             ram_labels = {
-                'ram_capacity_label': self.ram_static_info.capacity,
-                'ram_manufacturer_label': self.ram_static_info.modules_manufacturer
+                'ram_capacity_label': ram_static_info.capacity,
+                'ram_manufacturer_label': ram_static_info.modules_manufacturer
                 }
             self.update_labels(cpu_labels)
             self.update_labels(gpu_labels)
