@@ -47,12 +47,30 @@ class Handler():
 
 
 class Window:
+    __slots__ = (
+        "path", "builder",
+        "control", "window",
+        "cpu_info", "gpu_info", "ram_info", "FileData",
+        "cpu_static_info", "gpu_static_info", "ram_static_info",
+        "cpu_labels", "gpu_labels", "ram_labels",
+        "ControlGpuCheckButton", "ControlGpuScale", "ControlGpuAdjustment",
+        "threads_run", "thread_run",
+        "FanUpdater_loop",
+        "DynamicInfo_loop",
+        "cpu_dynamic_info", "gpu_dynamic_info",
+        "cpu_dynamic_labels", "gpu_dynamic_labels",
+        "MainWindow_loop",
+        "__weakref__"
+        )
+
     def __init__(self, cpu_class, gpu_class, ram_class, FileData):
         self.path = (f"{os.path.dirname(os.path.abspath(__file__))}/")
         self.builder = Gtk.Builder()
-        self.builder.add_from_file(f'{self.path}ui.glade')  # imports the .glade file
-        self.control = cntrl.Control()  # makes an instance of the control.Control() class in the control module
-        self.builder.connect_signals(Handler(self, self.control))  # connect the event signals to MainHandler class
+        self.builder.add_from_file(f'{self.path}ui.glade')
+        self.control = cntrl.Control()
+        self.builder.connect_signals(
+            Handler(self, self.control)  # connect event signals to MainHandler
+            )
         self.window = self.builder.get_object('application_window')
         # Imports the css
         style_provider = Gtk.CssProvider()
@@ -132,7 +150,9 @@ class Window:
         else:
             self.ControlGpuCheckButton.set_active(False)
             self.ControlGpuScale.set_sensitive(True)
-            self.ControlGpuScale.set_value(self.control.amd_fan_speed_current() / 2.55)
+            self.ControlGpuScale.set_value(
+                self.control.amd_fan_speed_current() / 2.55
+                )
 
     def FanUpdater(self):
         # updates the fan adjustment value when check box not activated
@@ -186,5 +206,5 @@ class Window:
         self.FanUpdater_loop.start()
         self.DynamicInfo_loop = threading.Thread(target=self.DynamicInfo)
         self.DynamicInfo_loop.start()
-        self.MainWindow_poop = threading.Thread(target=self.show_window)
-        self.MainWindow_poop.start()
+        self.MainWindow_loop = threading.Thread(target=self.show_window)
+        self.MainWindow_loop.start()
