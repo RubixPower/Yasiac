@@ -174,9 +174,6 @@ class Window:
         Gtk.main()
 
     def main(self):
-        FanUpdater_loop = threading.Thread(target=self.FanUpdater)
-        FanUpdater_loop.start()
-        DynamicInfo_loop = threading.Thread(target=self.DynamicInfo)
-        DynamicInfo_loop.start()
-        MainWindow_loop = threading.Thread(target=self.show_window)
-        MainWindow_loop.start()
+        FanUpdater_loop = threading.Thread(target=self.FanUpdater).start()
+        DynamicInfo_loop = threading.Thread(target=self.DynamicInfo).start()
+        MainWindow_loop = threading.Thread(target=self.show_window).start()
