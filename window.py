@@ -14,7 +14,7 @@ class Handler():
         self.control = control
 
     def on_destroy(self, *args):
-        self.window.thread_run = False
+        self.window.threads_run = False
         Gtk.main_quit()
         quit()
 
@@ -54,11 +54,8 @@ class Window:
         "cpu_static_info", "gpu_static_info", "ram_static_info",
         "cpu_labels", "gpu_labels", "ram_labels",
         "ControlGpuCheckButton", "ControlGpuScale", "ControlGpuAdjustment",
-        "threads_run", "thread_run",
+        "threads_run",
         "FanUpdater_loop",
-        "DynamicInfo_loop",
-        "cpu_dynamic_info", "gpu_dynamic_info",
-        "cpu_dynamic_labels", "gpu_dynamic_labels",
         "MainWindow_loop",
         "__weakref__"
         )
@@ -86,25 +83,26 @@ class Window:
         self.ram_info = ram_class
         self.FileData = FileData
 
-#  INFO
-        # static info
-        self.cpu_static_info = cpu_class(self.FileData)
-        self.gpu_static_info = gpu_class(self.FileData)
-        self.ram_static_info = ram_class()
-        self.cpu_labels = {
-            'cpu_name_label': self.cpu_static_info.name,
-            'cpu_cores_threads_label': self.cpu_static_info.cores_threads
-            }
-        self.gpu_labels = {'gpu_name_label': self.gpu_static_info.name}
-        self.ram_labels = {
-            'ram_capacity_label': self.ram_static_info.capacity,
-            'ram_manufacturer_label': self.ram_static_info.modules_manufacturer
-            }
-        self.static_cpu_labels()
-        self.static_gpu_labels()
-        self.static_ram_labels()
+        #  INFO
+        def static_info():
+            self.cpu_static_info = cpu_class(self.FileData)
+            self.gpu_static_info = gpu_class(self.FileData)
+            self.ram_static_info = ram_class()
+            cpu_labels = {
+                'cpu_name_label': self.cpu_static_info.name,
+                'cpu_cores_threads_label': self.cpu_static_info.cores_threads
+                }
+            gpu_labels = {'gpu_name_label': self.gpu_static_info.name}
+            ram_labels = {
+                'ram_capacity_label': self.ram_static_info.capacity,
+                'ram_manufacturer_label': self.ram_static_info.modules_manufacturer
+                }
+            self.update_labels(cpu_labels)
+            self.update_labels(gpu_labels)
+            self.update_labels(ram_labels)
+        static_info()
 
-#  CONTROL
+        #  CONTROL
         self.ControlGpuCheckButton = self.builder.get_object('GpuCheckButton')
         self.ControlGpuScale = self.builder.get_object('GpuFanScale')
         self.ControlGpuAdjustment = self.builder.get_object('GpuFanAdjustment')
@@ -112,22 +110,10 @@ class Window:
         self.ControlInit()
 
 #  LABELS
-    def static_cpu_labels(self):
-        for element in self.cpu_labels:
+    def update_labels(self, dictionary):
+        for element in dictionary:
             label = self.builder.get_object(element)
-            value = self.cpu_labels.get(element)()
-            label.set_text(f'\t{str(value)}')
-
-    def static_gpu_labels(self):
-        for element in self.gpu_labels:
-            label = self.builder.get_object(element)
-            value = self.gpu_labels.get(element)()
-            label.set_text(f'\t{str(value)}')
-
-    def static_ram_labels(self):
-        for element in self.ram_labels:
-            label = self.builder.get_object(element)
-            value = self.ram_labels.get(element)()
+            value = dictionary.get(element)()
             label.set_text(f'\t{str(value)}')
 
 #  CONTROL
@@ -165,36 +151,25 @@ class Window:
                 pass
 
     def DynamicInfo(self):
-        def cpu():
-            for key in self.cpu_dynamic_labels:
-                label = self.builder.get_object(key)
-                value = self.cpu_dynamic_labels.get(key)()
-                label.set_text(f'\t{str(value)}')
-
-        def gpu():
-            for key in self.gpu_dynamic_labels:
-                label = self.builder.get_object(key)
-                value = self.gpu_dynamic_labels.get(key)()
-                label.set_text(f'\t{str(value)}')
         while self.threads_run:
-            self.cpu_dynamic_info = self.cpu_info(self.FileData)
-            self.gpu_dynamic_info = self.gpu_info(self.FileData)
-            self.cpu_dynamic_labels = {
-                'cpu_clock_label': self.cpu_dynamic_info.clock,
-                'cpu_temp_label': self.cpu_dynamic_info.temperature,
-                'cpu_load_label': self.cpu_dynamic_info.load
+            cpu_dynamic_info = self.cpu_info(self.FileData)
+            gpu_dynamic_info = self.gpu_info(self.FileData)
+            cpu_dynamic_labels = {
+                'cpu_clock_label': cpu_dynamic_info.clock,
+                'cpu_temp_label': cpu_dynamic_info.temperature,
+                'cpu_load_label': cpu_dynamic_info.load
             }
 
-            self.gpu_dynamic_labels = {
-                'gpu_vram_label': self.gpu_dynamic_info.vram_usage_total,
-                'gpu_clock_label': self.gpu_dynamic_info.clock,
-                'gpu_temp_label': self.gpu_dynamic_info.temperature,
-                'gpu_fspeed_label': self.gpu_dynamic_info.fan_speed_current,
-                'gpu_load_label': self.gpu_dynamic_info.load
+            gpu_dynamic_labels = {
+                'gpu_vram_label': gpu_dynamic_info.vram_usage_total,
+                'gpu_clock_label': gpu_dynamic_info.clock,
+                'gpu_temp_label': gpu_dynamic_info.temperature,
+                'gpu_fspeed_label': gpu_dynamic_info.fan_speed_current,
+                'gpu_load_label': gpu_dynamic_info.load
             }
 
-            cpu()
-            gpu()
+            self.update_labels(cpu_dynamic_labels)
+            self.update_labels(gpu_dynamic_labels)
             time.sleep(1)
 
     def show_window(self):
@@ -202,9 +177,9 @@ class Window:
         Gtk.main()
 
     def main(self):
-        self.FanUpdater_loop = threading.Thread(target=self.FanUpdater)
-        self.FanUpdater_loop.start()
-        self.DynamicInfo_loop = threading.Thread(target=self.DynamicInfo)
-        self.DynamicInfo_loop.start()
-        self.MainWindow_loop = threading.Thread(target=self.show_window)
-        self.MainWindow_loop.start()
+        FanUpdater_loop = threading.Thread(target=self.FanUpdater)
+        FanUpdater_loop.start()
+        DynamicInfo_loop = threading.Thread(target=self.DynamicInfo)
+        DynamicInfo_loop.start()
+        MainWindow_loop = threading.Thread(target=self.show_window)
+        MainWindow_loop.start()
