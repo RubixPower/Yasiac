@@ -106,14 +106,14 @@ class Window:
         self.threads_run = True
         self.ControlInit()
 
-#  LABELS
+    #  LABELS
     def update_labels(self, dictionary):
         for element in dictionary:
             label = self.builder.get_object(element)
             value = dictionary.get(element)()
             label.set_text(f'\t{str(value)}')
 
-#  CONTROL
+    #  CONTROL
     def GpuCheckBtnStatus(self):
         status = self.ControlGpuCheckButton.get_active()
         return status
@@ -146,7 +146,7 @@ class Window:
                 self.ControlGpuAdjustment.set_value(fan_speed / 2.55)
             else:
                 pass
-
+    # INFO
     def DynamicInfo(self):
         while self.threads_run:
             cpu_dynamic_info = self.cpu_info(self.FileData)
@@ -168,7 +168,7 @@ class Window:
             self.update_labels(cpu_dynamic_labels)
             self.update_labels(gpu_dynamic_labels)
             time.sleep(1)
-
+    # --------------------------------------------------------------------------
     def show_window(self):
         self.window.show_all()
         Gtk.main()

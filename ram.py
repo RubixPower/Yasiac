@@ -4,7 +4,7 @@ import subprocess
 
 
 class Ram:
-    __slots__ = ("__weakref__",)
+    __slots__ = ("__weakref__")
 
     @staticmethod
     def capacity():

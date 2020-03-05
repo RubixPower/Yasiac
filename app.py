@@ -1,4 +1,6 @@
-import cpu, gpu, ram
+import cpu
+import gpu
+import ram
 from window import Window
 import os
 from get_path import FileData

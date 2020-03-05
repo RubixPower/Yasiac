@@ -3,6 +3,12 @@ import os
 import subprocess
 import sys
 class Control():
+    __slots__ = (
+                "current_folder",
+                "fan_speed_file",
+                "fan_speed_file_status",
+                "__weakref__"
+                )
     def __init__(self):
         self.current_folder = (f'{os.path.dirname(os.path.abspath(__file__))}/')
         self.fan_speed_file = subprocess.getoutput('sudo find /sys -name pwm1')
