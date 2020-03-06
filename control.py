@@ -2,6 +2,7 @@
 import os
 import subprocess
 import sys
+import glob
 class Control():
     __slots__ = (
                 "current_folder",
@@ -11,11 +12,14 @@ class Control():
                 )
     def __init__(self):
         self.current_folder = (f'{os.path.dirname(os.path.abspath(__file__))}/')
-        self.fan_speed_file = subprocess.getoutput('sudo find /sys -name pwm1')
+        #self.fan_speed_file = subprocess.getoutput('sudo find /sys -name pwm1')
+        self.fan_speed_file = glob.glob('/sys/devices/pci*/*/*/hwmon/hwmon*/pwm1')[0]
         self.fan_speed_file_status = subprocess.getoutput('sudo find /sys -name pwm1_enable')
 
+
     def amd_fan_speed_mode_current(self):
-        status = subprocess.getoutput(f'cat {self.fan_speed_file_status}')
+        with open(self.fan_speed_file_status) as data:
+            status = data.read().strip()
         if status == '0':
             return 'max'
         elif status == '1':
@@ -27,7 +31,7 @@ class Control():
 
     def amd_fan_speed_mode_change(self, choice):
         def file_write(number):
-            with open(f'{self.fan_speed_file_status}', 'w') as f:
+            with open(self.fan_speed_file_status, 'w') as f:
                 f.write(number)
         if choice == 'max':
             file_write('0')
@@ -43,5 +47,6 @@ class Control():
             f.write(str(number))
 
     def amd_fan_speed_current(self):
-        current = subprocess.getoutput(f'cat {self.fan_speed_file}')
-        return int(current)
+        with open(self.fan_speed_file) as data:
+            curr_speed = data.read().strip()
+        return int(curr_speed)

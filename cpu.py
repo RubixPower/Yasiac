@@ -2,6 +2,7 @@
 import os
 import subprocess
 import psutil
+import glob
 
 
 class Cpu:
@@ -10,17 +11,15 @@ class Cpu:
         "cached_name",
         "cached_cores_threads",
         "cores",
-        "FileData",
         "__weakref__",
     )
 
-    def __init__(self, FileData):
-        with open("/proc/cpuinfo") as f:
-            self.cached_cpuinfo = f.read().splitlines()
+    def __init__(self):
+        with open("/proc/cpuinfo") as FileObj:
+            self.cached_cpuinfo = FileObj.read().splitlines()
         self.cached_name = None
         self.cached_cores_threads = None
         self.cores = None
-        self.FileData = FileData
 
     @staticmethod
     def clean(text):
@@ -66,8 +65,8 @@ class Cpu:
         return self.cached_cores_threads
 
     def temperature(self):
-        with open(os.path.join(self.FileData.cpu_path, 'temp1_input')) as file_data:
-            return int(file_data.read()) / 1000
+        with open(glob.glob('/sys/class/hwmon/hwmon*/temp1_input')[0]) as FileObj:
+            return int(FileObj.read()) / 1000
 
     def clock(self):
         clock = None

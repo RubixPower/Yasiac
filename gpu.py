@@ -6,21 +6,21 @@ import glob
 
 class Gpu:
     __slots__ = ("glxinfo",
+                 "gpu_mem_path",
                  "amdgpu_info",
                  "vram_total",
-                 "FileData",
                  "amdgpu_path",
                  "__weakref__")
 
-    def __init__(self, FileData):
+    def __init__(self):
         self.glxinfo = []
-        self.amdgpu_info = []
-        self.FileData = FileData
-        gpu_pm_glob = glob.glob("/sys/kernel/debug/dri/*/amdgpu_pm_info")
-        self.amdgpu_path = gpu_pm_glob[0].replace("amdgpu_pm_info", "")
-        gpu_mem_glob = glob.glob("/sys/devices/pci*/*/*/mem_info_vram_total")
-        with open(gpu_mem_glob[0]) as FileObj:
+        # gpu path in hwmon
+        gpu_mem_glob = glob.glob("/sys/class/hwmon/hwmon*/fan1_input")[0]
+        self.gpu_mem_path = gpu_mem_glob.replace('fan1_input', '')
+
+        with open(os.path.join(self.gpu_mem_path, 'device/mem_info_vram_total')) as FileObj:
             self.vram_total = int(FileObj.read().strip()) / 1024 ** 2
+
         with subprocess.Popen(
             ("glxinfo", "-B"),
             bufsize=1,
@@ -34,8 +34,9 @@ class Gpu:
         ).stdout as popen:
             for line in popen:
                 self.glxinfo.append(line)
-        with open(f"{self.amdgpu_path}amdgpu_pm_info") as amdgpu_data:
-            self.amdgpu_info = amdgpu_data.read().splitlines()
+
+        with open(glob.glob("/sys/kernel/debug/dri/*/amdgpu_pm_info")[0]) as FileObj:
+            self.amdgpu_info = FileObj.read().splitlines()
 
     def name(self):
         for line in self.glxinfo:
@@ -45,15 +46,15 @@ class Gpu:
 
     def vram_usage_percentage(self):
         with open(
-            os.path.join(self.FileData.gpu_path, "/device/mem_busy_percent")
-        ) as data:
-            return int(data.read().strip())
+            os.path.join(self.gpu_mem_path, 'device/mem_info_busy')
+        ) as FileObj:
+            return int(FileObj.read().strip())
 
     def vram_usage_total(self):
         with open(
-            self.FileData.gpu_path + "/device/mem_info_vram_used"
-        ) as data:
-            return f"{round(int(data.read().strip()) / 1048576)}/{self.vram_total}"
+            os.path.join(self.gpu_mem_path, 'device/mem_info_vram_used')
+        ) as FileObj:
+            return f"{round(int(FileObj.read().strip()) / 1048576)}/{self.vram_total}"
 
     def clock(self):
         for line in self.amdgpu_info:
@@ -61,8 +62,8 @@ class Gpu:
                 return f"{line.split(' MHz (SCLK)')[0].strip()} [MHz]"
 
     def fan_speed_current(self):
-        with open(os.path.join(self.FileData.gpu_path, "fan1_input")) as data:
-            return data.read().replace("\n", "")
+        with open(os.path.join(self.gpu_mem_path, "fan1_input")) as FileObj:
+            return FileObj.read().replace("\n", "")
 
     def temperature(self):
         for line in self.amdgpu_info:

@@ -50,7 +50,7 @@ class Window:
     __slots__ = (
         "path", "builder",
         "control", "window",
-        "cpu_info", "gpu_info", "FileData",
+        "cpu_info", "gpu_info",
         "ControlGpuCheckButton", "ControlGpuScale", "ControlGpuAdjustment",
         "threads_run",
         "FanUpdater_loop",
@@ -58,7 +58,7 @@ class Window:
         "__weakref__"
         )
 
-    def __init__(self, cpu_class, gpu_class, ram_class, FileData):
+    def __init__(self, cpu_class, gpu_class, ram_class):
         self.path = (f"{os.path.dirname(os.path.abspath(__file__))}/")
         self.builder = Gtk.Builder()
         self.builder.add_from_file(f'{self.path}ui.glade')
@@ -78,12 +78,11 @@ class Window:
 
         self.cpu_info = cpu_class
         self.gpu_info = gpu_class
-        self.FileData = FileData
 
         #  INFO
         def static_info():
-            cpu_static_info = cpu_class(self.FileData)
-            gpu_static_info = gpu_class(self.FileData)
+            cpu_static_info = cpu_class()
+            gpu_static_info = gpu_class()
             ram_static_info = ram_class()
             cpu_labels = {
                 'cpu_name_label': cpu_static_info.name,
@@ -149,8 +148,8 @@ class Window:
     # INFO
     def DynamicInfo(self):
         while self.threads_run:
-            cpu_dynamic_info = self.cpu_info(self.FileData)
-            gpu_dynamic_info = self.gpu_info(self.FileData)
+            cpu_dynamic_info = self.cpu_info()
+            gpu_dynamic_info = self.gpu_info()
             cpu_dynamic_labels = {
                 'cpu_clock_label': cpu_dynamic_info.clock,
                 'cpu_temp_label': cpu_dynamic_info.temperature,
