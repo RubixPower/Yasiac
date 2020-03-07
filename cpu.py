@@ -65,7 +65,9 @@ class Cpu:
         return self.cached_cores_threads
 
     def temperature(self):
-        with open(glob.glob('/sys/class/hwmon/hwmon*/temp1_input')[0]) as FileObj:
+        with open(
+            glob.glob('/sys/class/hwmon/hwmon*/temp1_input')[0]
+                  ) as FileObj:
             return int(FileObj.read()) / 1000
 
     def clock(self):

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 import os
 import subprocess
-import sys
 import glob
+
+
 class Control():
     __slots__ = (
                 "current_folder",
@@ -10,12 +11,17 @@ class Control():
                 "fan_speed_file_status",
                 "__weakref__"
                 )
-    def __init__(self):
-        self.current_folder = (f'{os.path.dirname(os.path.abspath(__file__))}/')
-        #self.fan_speed_file = subprocess.getoutput('sudo find /sys -name pwm1')
-        self.fan_speed_file = glob.glob('/sys/devices/pci*/*/*/hwmon/hwmon*/pwm1')[0]
-        self.fan_speed_file_status = subprocess.getoutput('sudo find /sys -name pwm1_enable')
 
+    def __init__(self):
+        self.current_folder = (
+            f'{os.path.dirname(os.path.abspath(__file__))}/'
+            )
+        self.fan_speed_file = glob.glob(
+            '/sys/devices/pci*/*/*/hwmon/hwmon*/pwm1'
+            )[0]
+        self.fan_speed_file_status = subprocess.getoutput(
+            'sudo find /sys -name pwm1_enable'
+            )
 
     def amd_fan_speed_mode_current(self):
         with open(self.fan_speed_file_status) as data:
@@ -35,7 +41,7 @@ class Control():
                 f.write(number)
         if choice == 'max':
             file_write('0')
-        elif  choice == 'manual':
+        elif choice == 'manual':
             file_write('1')
         elif choice == 'auto':
             file_write('2')

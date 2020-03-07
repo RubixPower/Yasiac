@@ -18,7 +18,9 @@ class Gpu:
         gpu_mem_glob = glob.glob("/sys/class/hwmon/hwmon*/fan1_input")[0]
         self.gpu_mem_path = gpu_mem_glob.replace('fan1_input', '')
 
-        with open(os.path.join(self.gpu_mem_path, 'device/mem_info_vram_total')) as FileObj:
+        with open(os.path.join(
+            self.gpu_mem_path, 'device/mem_info_vram_total')
+        ) as FileObj:
             self.vram_total = int(FileObj.read().strip()) / 1024 ** 2
 
         with subprocess.Popen(
@@ -35,7 +37,9 @@ class Gpu:
             for line in popen:
                 self.glxinfo.append(line)
 
-        with open(glob.glob("/sys/kernel/debug/dri/*/amdgpu_pm_info")[0]) as FileObj:
+        with open(
+            glob.glob("/sys/kernel/debug/dri/*/amdgpu_pm_info")[0]
+                  ) as FileObj:
             self.amdgpu_info = FileObj.read().splitlines()
 
     def name(self):
@@ -54,7 +58,11 @@ class Gpu:
         with open(
             os.path.join(self.gpu_mem_path, 'device/mem_info_vram_used')
         ) as FileObj:
-            return f"{round(int(FileObj.read().strip()) / 1048576)}/{self.vram_total}"
+            return (
+                str(round(int(FileObj.read().strip()) / 1024**2)) +
+                '/' +
+                str(self.vram_total)
+            )
 
     def clock(self):
         for line in self.amdgpu_info:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import gi
 import control as cntrl
+import gi
 import os
 import threading
 import time
@@ -18,7 +18,6 @@ class Handler():
         Gtk.main_quit()
         quit()
 
-    ############################################
     # Control Stack
     def GpuFanScaleMode(self, *args):
         status = self.window.GpuCheckBtnStatus()
@@ -145,6 +144,7 @@ class Window:
                 self.ControlGpuAdjustment.set_value(fan_speed / 2.55)
             else:
                 pass
+
     # INFO
     def DynamicInfo(self):
         while self.threads_run:
@@ -167,12 +167,12 @@ class Window:
             self.update_labels(cpu_dynamic_labels)
             self.update_labels(gpu_dynamic_labels)
             time.sleep(1)
-    # --------------------------------------------------------------------------
+
     def show_window(self):
         self.window.show_all()
         Gtk.main()
 
     def main(self):
-        FanUpdater_loop = threading.Thread(target=self.FanUpdater).start()
-        DynamicInfo_loop = threading.Thread(target=self.DynamicInfo).start()
-        MainWindow_loop = threading.Thread(target=self.show_window).start()
+        threading.Thread(target=self.FanUpdater).start()
+        threading.Thread(target=self.DynamicInfo).start()
+        threading.Thread(target=self.show_window).start()
