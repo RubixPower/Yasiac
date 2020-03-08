@@ -12,7 +12,8 @@ A simple app that lets you get some system info and control gpu fan/s
       
 ### Dependencies:
 1. Packages:
-    >**python3**                                                                                                                                                                                                                                                                                                                                                                     
+    >**python3.8**                                                                                                                                                                                                                                                                                                                                                                     
     >**glxinfo or mesa-demos**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+    >**at-spi2-core** and **lib32-at-spi2-core**                                                                                                
 2. Python packages:
     > Execute pip3_install.sh
