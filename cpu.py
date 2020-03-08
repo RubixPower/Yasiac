@@ -73,7 +73,7 @@ class Cpu:
     def clock(self):
         clock = None
         with subprocess.Popen(
-            ("lscpu"),
+            ("lscpu",),
             bufsize=1,
             stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
