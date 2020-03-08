@@ -42,7 +42,8 @@ class Handler():
         else:
             self.window.cntrl_check_button.set_active(False)
             fan_speed = self.control.amd_fan_speed_current()
-            self.window.control_gpu_adjustment.set_value(round(fan_speed / 2.55))
+            self.window.control_gpu_adjustment.set_value(
+                round(fan_speed / 2.55))
 
 
 class Window:
@@ -98,7 +99,8 @@ class Window:
         #  CONTROL
         self.cntrl_check_button = self.builder.get_object('GpuCheckButton')
         self.control_scale = self.builder.get_object('GpuFanScale')
-        self.control_gpu_adjustment = self.builder.get_object('GpuFanAdjustment')
+        self.control_gpu_adjustment = self.builder.get_object(
+            'GpuFanAdjustment')
         self.threads_run = True
         self.control_init()
 
