@@ -50,7 +50,7 @@ class Ram:
                     line = line[0:-1]
 
                 manufacturer = line[len("\tManufacturer: "):]
-                if manufacturer != "Not Specified":
+                if manufacturer not in ("Not Specified", "Unknown"):
                     manufacturers.add(manufacturer)
 
         return ", ".join(manufacturers)
