@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <!-- interface-css-provider-path style.css -->
@@ -1782,7 +1782,7 @@
                                             <property name="hexpand">True</property>
                                             <property name="active">True</property>
                                             <property name="draw_indicator">True</property>
-                                            <signal name="toggled" handler="GpuFanScaleMode" swapped="no"/>
+                                            <signal name="toggled" handler="fan_scale_mode" swapped="no"/>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
@@ -1876,7 +1876,7 @@
                         <property name="receives_default">True</property>
                         <property name="use_stock">True</property>
                         <property name="always_show_image">True</property>
-                        <signal name="clicked" handler="ControlApply" swapped="no"/>
+                        <signal name="clicked" handler="apply" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -1894,7 +1894,7 @@
                         <property name="receives_default">True</property>
                         <property name="image">reset_image</property>
                         <property name="always_show_image">True</property>
-                        <signal name="clicked" handler="ControlReset" swapped="no"/>
+                        <signal name="clicked" handler="reset" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>

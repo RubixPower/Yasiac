@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import control as cntrl
-import gi
 import os
 import threading
 import time
+import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk
 
@@ -19,30 +19,30 @@ class Handler():
         quit()
 
     # Control Stack
-    def GpuFanScaleMode(self, *args):
-        status = self.window.GpuCheckBtnStatus()
+    def fan_scale_mode(self, *args):
+        status = self.window.check_btn_status()
         if status:
-            self.window.ControlGpuScale.set_sensitive(False)
+            self.window.control_scale.set_sensitive(False)
         else:
-            self.window.ControlGpuScale.set_sensitive(True)
+            self.window.control_scale.set_sensitive(True)
 
-    def ControlApply(self, *args):
-        CheckBtn_status = self.window.ControlGpuCheckButton.get_active()
-        if CheckBtn_status:
+    def apply(self, *args):
+        btn_status = self.window.cntrl_check_button.get_active()
+        if btn_status:
             self.control.amd_fan_speed_mode_change('auto')
         else:
-            AdjustmentValue = self.window.ControlGpuAdjustment.get_value()
+            adjustment_value = self.window.control_gpu_adjustment.get_value()
             self.control.amd_fan_speed_mode_change('manual')
-            self.control.amd_fan_speed_change(int(AdjustmentValue * 2.55))
+            self.control.amd_fan_speed_change(int(adjustment_value * 2.55))
 
-    def ControlReset(self, *args):
+    def reset(self, *args):
         if self.control.amd_fan_speed_mode_current() == 'auto':
-            self.window.ControlGpuCheckButton.set_active(True)
-            self.window.ControlGpuScale.set_sensitive(False)
+            self.window.cntrl_check_button.set_active(True)
+            self.window.control_scale.set_sensitive(False)
         else:
-            self.window.ControlGpuCheckButton.set_active(False)
+            self.window.cntrl_check_button.set_active(False)
             fan_speed = self.control.amd_fan_speed_current()
-            self.window.ControlGpuAdjustment.set_value(round(fan_speed / 2.55))
+            self.window.control_gpu_adjustment.set_value(round(fan_speed / 2.55))
 
 
 class Window:
@@ -50,10 +50,8 @@ class Window:
         "path", "builder",
         "control", "window",
         "cpu_info", "gpu_info",
-        "ControlGpuCheckButton", "ControlGpuScale", "ControlGpuAdjustment",
+        "cntrl_check_button", "control_scale", "control_gpu_adjustment",
         "threads_run",
-        "FanUpdater_loop",
-        "MainWindow_loop",
         "__weakref__"
         )
 
@@ -98,11 +96,11 @@ class Window:
         static_info()
 
         #  CONTROL
-        self.ControlGpuCheckButton = self.builder.get_object('GpuCheckButton')
-        self.ControlGpuScale = self.builder.get_object('GpuFanScale')
-        self.ControlGpuAdjustment = self.builder.get_object('GpuFanAdjustment')
+        self.cntrl_check_button = self.builder.get_object('GpuCheckButton')
+        self.control_scale = self.builder.get_object('GpuFanScale')
+        self.control_gpu_adjustment = self.builder.get_object('GpuFanAdjustment')
         self.threads_run = True
-        self.ControlInit()
+        self.control_init()
 
     #  LABELS
     def update_labels(self, dictionary):
@@ -111,42 +109,35 @@ class Window:
             value = dictionary.get(element)()
             label.set_text(f'\t{str(value)}')
 
-    #  CONTROL
-    def GpuCheckBtnStatus(self):
-        status = self.ControlGpuCheckButton.get_active()
+    #  CONTROL stack
+    def check_btn_status(self):
+        status = self.cntrl_check_button.get_active()
         return status
 
-    def GpuScaleSetSens(self, choice):
-        self.ControlGpuScale.set_sensitive(choice)
-
-    def GpuScaleGetSens(self):
-        status = self.ControlGpuScale.get_sensitive()
-        return status
-
-    def ControlInit(self):
+    def control_init(self):
         mode = self.control.amd_fan_speed_mode_current()
         if mode == 'auto':
-            self.ControlGpuCheckButton.set_active(True)
-            self.ControlGpuScale.set_sensitive(False)
+            self.cntrl_check_button.set_active(True)
+            self.control_scale.set_sensitive(False)
         else:
-            self.ControlGpuCheckButton.set_active(False)
-            self.ControlGpuScale.set_sensitive(True)
-            self.ControlGpuScale.set_value(
+            self.cntrl_check_button.set_active(False)
+            self.control_scale.set_sensitive(True)
+            self.control_scale.set_value(
                 self.control.amd_fan_speed_current() / 2.55
                 )
 
-    def FanUpdater(self):
+    def fan_updater(self):
         # updates the fan adjustment value when check box not activated
         while self.threads_run:
             time.sleep(1)
-            if self.ControlGpuCheckButton.get_active():
+            if self.cntrl_check_button.get_active():
                 fan_speed = self.control.amd_fan_speed_current()
-                self.ControlGpuAdjustment.set_value(fan_speed / 2.55)
+                self.control_gpu_adjustment.set_value(fan_speed / 2.55)
             else:
                 pass
 
-    # INFO
-    def DynamicInfo(self):
+    # INFO stack
+    def dynamic_info(self):
         while self.threads_run:
             cpu_dynamic_info = self.cpu_info()
             gpu_dynamic_info = self.gpu_info()
@@ -173,6 +164,6 @@ class Window:
         Gtk.main()
 
     def main(self):
-        threading.Thread(target=self.FanUpdater).start()
-        threading.Thread(target=self.DynamicInfo).start()
+        threading.Thread(target=self.fan_updater).start()
+        threading.Thread(target=self.dynamic_info).start()
         threading.Thread(target=self.show_window).start()
