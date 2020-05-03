@@ -34,13 +34,6 @@ class Cpu:
         else:
             print("Cpu not found or supported")
 
-    def name_(self):
-        return next(
-            Cpu.clean(line.split(": ")[1])
-            for line in self.cached_cpuinfo
-            if line.startswith("model name\t")
-        )
-
     def name(self):
         if self.cached_name is None:
             self.cached_name = next(
